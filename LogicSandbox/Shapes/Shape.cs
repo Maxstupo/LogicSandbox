@@ -1,12 +1,13 @@
 ﻿namespace Maxstupo.LogicSandbox.Shapes {
-   
+
     using System.Drawing;
     using Maxstupo.LogicSandbox.Utility;
+    using Maxstupo.LogicSandbox.Utility.Interaction;
 
     /// <summary>
     /// Represents a 2D shape, that can have sub-shapes. Provides methods for drawing, and supports positioning relative to parent.
     /// </summary>
-    public abstract class Shape : Node<Shape> {
+    public abstract class Shape : Node<Shape>, IRectangle {
 
         private float x;
         /// <summary>The local position along the x-axis.</summary>

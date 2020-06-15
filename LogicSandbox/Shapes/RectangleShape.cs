@@ -2,11 +2,14 @@
 
     using System.Drawing;
     using Maxstupo.LogicSandbox.Utility;
+    using Maxstupo.LogicSandbox.Utility.Interaction;
 
     /// <summary>
     /// Represents a concrete implemention of a rectangle shape. Supports outlines and rounded corners.
     /// </summary>
-    public class RectangleShape : Shape {
+    public class RectangleShape : Shape
+       // TEMP:
+       , ISelectable {
 
         public RectangleShape() : this(0, 0, 0, 0, null) { }
 
@@ -14,6 +17,17 @@
 
         public override bool ContainsPoint(float x, float y) {
             return !(x < GlobalX || y < GlobalY || x > (GlobalX + Width) || y > (GlobalY + Height));
+        }
+
+        // TEMP:
+        public void OnDeselected() {
+            OutlineColor = Color.Gray;
+        }
+
+        // TEMP:
+        public void OnSelected() {
+            OutlineColor = Color.Red;
+
         }
 
         protected override void DrawShape(Graphics g) {

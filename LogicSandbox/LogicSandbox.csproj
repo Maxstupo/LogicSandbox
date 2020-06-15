@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{9F4E1DE3-6B16-4576-BA45-1722006DAC26}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>Maxstupo.LogicSandbox</RootNamespace>
     <AssemblyName>LogicSandbox</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
@@ -31,6 +31,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -61,7 +64,10 @@
     <Compile Include="Shapes\RectangleShape.cs" />
     <Compile Include="Shapes\Shape.cs" />
     <Compile Include="Utility\GraphicsExtensions.cs" />
+    <Compile Include="Utility\Interaction\IRectangle.cs" />
+    <Compile Include="Utility\Interaction\ISelectable.cs" />
     <Compile Include="Utility\Node.cs" />
+    <Compile Include="Utility\Interaction\Selector.cs" />
     <Compile Include="Utility\TextStyle.cs" />
     <EmbeddedResource Include="Forms\FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
