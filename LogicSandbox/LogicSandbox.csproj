@@ -66,6 +66,7 @@
     <Compile Include="Utility\GraphicsExtensions.cs" />
     <Compile Include="Utility\Interaction\IRectangle.cs" />
     <Compile Include="Utility\Interaction\ISelectable.cs" />
+    <Compile Include="Utility\Interaction\Transformer.cs" />
     <Compile Include="Utility\Node.cs" />
     <Compile Include="Utility\Interaction\Selector.cs" />
     <Compile Include="Utility\TextStyle.cs" />

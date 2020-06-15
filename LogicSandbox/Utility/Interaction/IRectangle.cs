@@ -5,8 +5,8 @@
     /// </summary>
     public interface IRectangle {
 
-        float X { get; }
-        float Y { get; }
+        float X { get; set; }
+        float Y { get; set; }
 
         float Width { get; }
         float Height { get; }

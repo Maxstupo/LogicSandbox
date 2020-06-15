@@ -83,6 +83,11 @@
             OnEndDrag?.Invoke(this, selectedItems);
             return true;
         }
+        
+        public void Select(T item) {
+            selectedItems.Add(item);
+            NotifyItems(true);
+        }
 
         public void SelectAll() {
             selectedItems.Clear();
