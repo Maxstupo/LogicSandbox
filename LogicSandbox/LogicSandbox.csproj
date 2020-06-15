@@ -57,6 +57,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Shapes\CircleShape.cs" />
+    <Compile Include="Shapes\RectangleShape.cs" />
+    <Compile Include="Shapes\Shape.cs" />
     <Compile Include="Utility\GraphicsExtensions.cs" />
     <Compile Include="Utility\Node.cs" />
     <Compile Include="Utility\TextStyle.cs" />
