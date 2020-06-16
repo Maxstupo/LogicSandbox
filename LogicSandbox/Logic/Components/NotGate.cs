@@ -6,8 +6,8 @@
     public sealed class NotGate : DigitalComponent {
 
         public NotGate(string id, float x, float y) : base(id, "NOT", x, y, 34, 34) {
-            new Pin(this, "pin1", Polarity.Input, 0, 0.5f, 10).PercentagePosition = true;
-            new Pin(this, "pin2", Polarity.Output, 1, 0.5f, 10).PercentagePosition = true;
+            new Pin(this, "in0", Polarity.Input, 0, 0.5f, 10).PercentagePosition = true;
+            new Pin(this, "out0", Polarity.Output, 1, 0.5f, 10).PercentagePosition = true;
         }
 
         protected override void DrawSymbol(Graphics g) {

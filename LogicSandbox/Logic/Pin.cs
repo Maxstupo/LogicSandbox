@@ -1,5 +1,6 @@
 ﻿namespace Maxstupo.LogicSandbox.Logic {
     using System;
+    using System.Collections.Generic;
     using System.Drawing;
     using Maxstupo.LogicSandbox.Logic.Components;
     using Maxstupo.LogicSandbox.Shapes;
@@ -12,6 +13,8 @@
 
 
         public string Id { get; }
+
+        public string FullId => $"{((DigitalComponent) Parent).Id}.{Id}";
 
         public Polarity Polarity { get; }
 

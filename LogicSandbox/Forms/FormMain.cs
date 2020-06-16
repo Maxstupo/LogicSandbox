@@ -19,6 +19,7 @@
         private Keys InclusiveKey { get; set; } = Keys.Shift;
 
         private Circuit circuit = new Circuit();
+
         private readonly Selector<DigitalComponent> selector;
         private readonly Transformer<DigitalComponent> transformer = new Transformer<DigitalComponent>();
 
@@ -42,15 +43,15 @@
         }
 
         private void FormMain_Load(object sender, EventArgs e) {
-            canvas.Zoom = 2;
+            canvas.Zoom = 2; // TEMP: Zoom Level.
             canvas.Center();
 
-
-            circuit.Components.Add(new NotGate("not_gate0", 10, 60));
-            circuit.Components.Add(new NotGate("not_gate0", -40, 20));
-            circuit.Components.Add(new NotGate("not_gate0", 50, -20));
-            circuit.Components.Add(new NotGate("not_gate0", -20, -50));
-            circuit.Components.Add(new NotGate("not_gate0", 90, -90));
+            // TEMP: Components
+            circuit.AddComponent(new Power("pwr0", -10, -60));
+            circuit.AddComponent(new NotGate("not_gate0", 10, 60));
+            circuit.AddComponent(new NotGate("not_gate1", -40, 20));
+            circuit.AddComponent(new NotGate("not_gate2", 50, -20));
+            circuit.AddComponent(new OrGate("or_gate0", -20, -50));
         }
 
         private void Canvas_Paint(object sender, PaintEventArgs e) {
@@ -69,6 +70,7 @@
         }
 
         private void Canvas_MouseDown(object sender, MouseEventArgs e) {
+      
             if (e.Button == MouseButtons.Left) {
 
                 selectedPin = circuit.GetPinOver();
@@ -88,6 +90,10 @@
                 }
 
             } else if (e.Button == MouseButtons.Right) {
+
+                Pin pin = circuit.GetPinOver();
+                if (pin != null)
+                    circuit.RemoveConnectedWires(pin);
 
             }
 

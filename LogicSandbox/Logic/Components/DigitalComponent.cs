@@ -41,7 +41,7 @@
 
             DrawSymbol(g);
 
-            DrawLabel(g);
+            DrawLabel(g);Label = Id;
         }
 
         /// <summary>Draw the name (label) of the component.</summary>
