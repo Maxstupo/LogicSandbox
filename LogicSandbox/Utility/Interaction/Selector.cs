@@ -154,7 +154,14 @@
         }
 
         public void InvertSelection() {
-            throw new NotImplementedException();
+            NotifyItems(false);
+           
+            List<T> invertedSelection = ItemSource.Except(selectedItems).ToList();
+          
+            selectedItems.Clear();
+            selectedItems.AddRange(invertedSelection);
+
+            NotifyItems(true);
         }
 
         private void NotifyItems(bool isSelected) {

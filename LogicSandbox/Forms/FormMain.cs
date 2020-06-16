@@ -2,48 +2,35 @@
 
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Drawing;
     using System.Drawing.Drawing2D;
     using System.Linq;
     using System.Windows.Forms;
+    using Maxstupo.LogicSandbox.Logic.Components;
+    using Maxstupo.LogicSandbox.Properties;
     using Maxstupo.LogicSandbox.Shapes;
     using Maxstupo.LogicSandbox.Utility.Interaction;
 
     public partial class FormMain : Form {
 
-        private readonly List<Shape> shapes = new List<Shape>();
-        private readonly Selector<Shape> selector;
-        private readonly Transformer<Shape> transformer = new Transformer<Shape>();
+        private Keys AdditiveKey { get; set; } = Keys.Control;
+        private Keys InclusiveKey { get; set; } = Keys.Shift;
+
+        private readonly List<DigitalComponent> digitalComponents = new List<DigitalComponent>();
+
+        private readonly Selector<DigitalComponent> selector;
+        private readonly Transformer<DigitalComponent> transformer = new Transformer<DigitalComponent>();
 
         public FormMain() {
             InitializeComponent();
 
-            selector = new Selector<Shape>(shapes);
+            selector = new Selector<DigitalComponent>(digitalComponents);
             selector.OnDragging += (s, e) => canvas.Refresh();
-            selector.OnEndDrag += (s, e) => canvas.Refresh();
+            selector.OnEndDrag += Selector_OnEndDrag;
 
             transformer.OnMoving += (s, e) => canvas.Refresh();
 
-            // TEMP:
-            shapes.Add(new RectangleShape(5, -53, 120, 32) {
-                CornerRadius = 5,
-                BackgroundColor = Color.Teal,
-                OutlineColor = Color.Blue,
-                OutlineThickness = 2
-            });
-            // TEMP:
-            shapes.Add(new RectangleShape(-112, 4, 32, 32) {
-                BackgroundColor = Color.Green,
-                OutlineColor = Color.Olive,
-                OutlineThickness = 3
-            });
-            // TEMP:
-            shapes.Add(new RectangleShape(5, 65, 33, 48) {
-                CornerRadius = 2,
-                BackgroundColor = Color.DarkGray,
-                OutlineColor = Color.Cyan,
-                OutlineThickness = 3
-            });
 
             canvas.Paint += Canvas_Paint;
 
@@ -52,9 +39,15 @@
             canvas.MouseUp += Canvas_MouseUp;
         }
 
-
         private void FormMain_Load(object sender, EventArgs e) {
             canvas.Center();
+
+
+            digitalComponents.Add(new NotGate("not_gate0", 10, 60));
+            digitalComponents.Add(new NotGate("not_gate0", -40, 20));
+            digitalComponents.Add(new NotGate("not_gate0", 50, -20));
+            digitalComponents.Add(new NotGate("not_gate0", -20, -50));
+            digitalComponents.Add(new NotGate("not_gate0", 90, -90));
         }
 
         private void Canvas_Paint(object sender, PaintEventArgs e) {
@@ -64,8 +57,8 @@
             g.InterpolationMode = InterpolationMode.HighQualityBicubic;
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-            foreach (Shape shape in shapes)
-                shape.Draw(g);
+            foreach (DigitalComponent component in digitalComponents)
+                component.Draw(g);
 
             selector.Draw(g);
         }
@@ -73,28 +66,18 @@
         private void Canvas_MouseDown(object sender, MouseEventArgs e) {
             if (e.Button == MouseButtons.Left) {
 
-                bool additiveMode = ModifierKeys.HasFlag(Keys.Control); // Previous selection not cleared.
+                bool additiveMode = ModifierKeys.HasFlag(AdditiveKey); // Previous selection not cleared.
 
                 if (!selector.Start(canvas.MouseWorldX, canvas.MouseWorldY, additiveMode, GetItemOver)) {
 
                     transformer.Clear();
-                    transformer.AddItem(selector.SelectedItems);
+                    transformer.AddItems(selector.SelectedItems);
                     transformer.StartDrag(canvas.MouseWorldX, canvas.MouseWorldY);
 
                     canvas.Refresh();
                 }
-                               
-            }
 
-        }
-
-        // TODO: Improve method.
-        private Shape GetItemOver(float x, float y) {
-            foreach (var a in shapes) {
-                if (a.ContainsPoint(x, y))
-                    return a;
             }
-            return null;
         }
 
         private void Canvas_MouseMove(object sender, MouseEventArgs e) {
@@ -106,13 +89,65 @@
         private void Canvas_MouseUp(object sender, MouseEventArgs e) {
             if (e.Button == MouseButtons.Left) {
 
-                bool additiveMode = ModifierKeys.HasFlag(Keys.Control); // Previous selection not cleared.
-                bool inclusiveMode = ModifierKeys.HasFlag(Keys.Shift); // Item must be inside of selection bounds. 
+                bool additiveMode = ModifierKeys.HasFlag(AdditiveKey); // Previous selection not cleared.
+                bool inclusiveMode = ModifierKeys.HasFlag(InclusiveKey); // Item must be inside of selection bounds. 
 
                 selector.EndDrag(canvas.MouseWorldX, canvas.MouseWorldY, additiveMode, inclusiveMode);
                 transformer.EndDrag();
             }
+            canvas.Refresh();
         }
+
+        private void Selector_OnEndDrag(object sender, List<DigitalComponent> selectedItems) {
+            transformer.Clear();
+            transformer.AddItems(selectedItems);
+            canvas.Refresh();
+        }
+
+
+        // TODO: Improve method.
+        private DigitalComponent GetItemOver(float x, float y) {
+            foreach (DigitalComponent component in digitalComponents) {
+                if (component.ContainsPoint(x, y))
+                    return component;
+            }
+            return null;
+        }
+
+        #region Menu Strip
+
+        private void exitTsmi_Click(object sender, EventArgs e) {
+            Application.Exit();
+        }
+
+        private void selectAllTsmi_Click(object sender, EventArgs e) {
+            selector.SelectAll();
+            canvas.Refresh();
+        }
+
+        private void deselectAllTsmi_Click(object sender, EventArgs e) {
+            selector.DeselectAll();
+            canvas.Refresh();
+        }
+
+        private void invertSelectionTsmi_Click(object sender, EventArgs e) {
+            selector.InvertSelection();
+            canvas.Refresh();
+        }
+
+        private void centerTsmi_Click(object sender, EventArgs e) {
+            if (transformer.ItemCount > 0) {
+                canvas.Center(transformer.Selection);
+            } else {
+                canvas.Center();
+            }
+        }
+
+        private void wikiTsmi_Click(object sender, EventArgs e) {
+            Process.Start(Resources.WikiUrl);
+        }
+
+        #endregion
 
     }
 

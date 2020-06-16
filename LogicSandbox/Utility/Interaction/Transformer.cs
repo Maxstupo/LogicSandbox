@@ -31,6 +31,7 @@
         /// <summary>Returns true when a move operation is currently occuring.</summary>
         public bool IsMoving { get; private set; }
 
+        /// <summary>Returns the smallest bounding box possible, encompassing all items from this transformer.</summary>
         public RectangleF Selection { get; private set; }
         private RectangleF originalSelection;
 
@@ -38,7 +39,7 @@
         private float originY;
 
         private readonly List<TransformerItem> items = new List<TransformerItem>();
-
+        public int ItemCount => items.Count;
 
         /// <summary>Invoked when move operation starts. <see cref="StartDrag(float, float)"/></summary>
         public event EventHandler OnStartMove;
@@ -68,9 +69,10 @@
         /// <summary>
         /// Adds all items, that will be moved when a move operation occurs. See <see cref="StartDrag(float, float)"/>
         /// </summary>
-        public void AddItem(IEnumerable<T> items) {
+        public void AddItems(IEnumerable<T> items) {
             foreach (T t in items)
                 AddItem(t);
+            CalculateBounds();
         }
 
         /// <summary>

@@ -59,5 +59,14 @@ namespace Maxstupo.LogicSandbox.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://github.com/Maxstupo/LogicSandbox/wiki.
+        /// </summary>
+        internal static string WikiUrl {
+            get {
+                return ResourceManager.GetString("WikiUrl", resourceCulture);
+            }
+        }
     }
 }

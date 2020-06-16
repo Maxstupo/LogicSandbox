@@ -5,8 +5,14 @@
     /// </summary>
     public interface ISelectable {
 
+        /// <summary>
+        /// Invoked when the item is selected. Selection state not monitored, method can be invoked repeatly.
+        /// </summary>
         void OnSelected();
 
+        /// <summary>
+        /// Invoked when the item is deselected. Selection state not monitored, method can be invoked repeatly.
+        /// </summary>
         void OnDeselected();
 
     }
