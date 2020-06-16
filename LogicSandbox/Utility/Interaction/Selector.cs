@@ -46,6 +46,12 @@
             ItemSource = items ?? new List<T>();
         }
 
+        /// <summary>
+        /// Attempts to start a drag operation, or select an item at the given position.
+        /// </summary>
+        /// <param name="additiveMode">If true and provided position is over an item, the item will be added without previous selection being cleared.</param>
+        /// <param name="hitTest">A delegate to test if an item is at the given position. If null method will act like <see cref="StartDrag(float, float, bool)"/></param>
+        /// <returns>True if no item was located at the given position, false otherwise.</returns>
         public bool Start(float x, float y, bool additiveMode, Func<float, float, T> hitTest) {
             T item = (hitTest != null) ? hitTest(x, y) : default;
             if (item == null) {
