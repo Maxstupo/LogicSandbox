@@ -20,7 +20,7 @@
 
             selector = new Selector<Shape>(shapes);
             selector.OnDragging += (s, e) => canvas.Refresh();
-            selector.OnEndDrag += Selector_OnEndDrag;
+            selector.OnEndDrag += (s, e) => canvas.Refresh();
 
             transformer.OnMoving += (s, e) => canvas.Refresh();
 
@@ -73,39 +73,17 @@
         private void Canvas_MouseDown(object sender, MouseEventArgs e) {
             if (e.Button == MouseButtons.Left) {
 
-                Shape shape = GetItemOver(canvas.MouseWorldX, canvas.MouseWorldY);
-                if (shape == null) {
-                    selector.StartDrag(canvas.MouseWorldX, canvas.MouseWorldY);
+                bool additiveMode = ModifierKeys.HasFlag(Keys.Control); // Previous selection not cleared.
 
-                } else {
+                if (!selector.Start(canvas.MouseWorldX, canvas.MouseWorldY, additiveMode, GetItemOver)) {
 
-                    IReadOnlyList<Shape> selectedItems = selector.SelectedItems;
-
-                    bool additiveMode = ModifierKeys.HasFlag(Keys.Control); // Previous selection not cleared.
-
-                    bool containsShape = selectedItems.Contains(shape);
-
-                    if (additiveMode && !containsShape) {
-                        transformer.AddItem(shape);
-                        selector.Select(shape);
-
-                    } else if ((selectedItems.Count == 1 && selector.SelectedItems[0] != shape) || !containsShape) {
-                        selector.DeselectAll();
-                    }
-
-                    if (selectedItems.Count == 0) {
-                        selector.Select(shape);
-
-                        transformer.Clear();
-                        transformer.AddItem(shape);
-
-                    }
-
-
+                    transformer.Clear();
+                    transformer.AddItem(selector.SelectedItems);
                     transformer.StartDrag(canvas.MouseWorldX, canvas.MouseWorldY);
+
                     canvas.Refresh();
                 }
-
+                               
             }
 
         }
@@ -134,13 +112,6 @@
                 selector.EndDrag(canvas.MouseWorldX, canvas.MouseWorldY, additiveMode, inclusiveMode);
                 transformer.EndDrag();
             }
-        }
-
-        private void Selector_OnEndDrag(object sender, List<Shape> selectedItems) {
-            transformer.Clear();
-            transformer.AddItem(selectedItems);
-
-            canvas.Refresh();
         }
 
     }
