@@ -7,6 +7,7 @@
     using System.Drawing.Drawing2D;
     using System.Linq;
     using System.Windows.Forms;
+    using Maxstupo.LogicSandbox.Logic;
     using Maxstupo.LogicSandbox.Logic.Components;
     using Maxstupo.LogicSandbox.Properties;
     using Maxstupo.LogicSandbox.Shapes;
@@ -17,15 +18,16 @@
         private Keys AdditiveKey { get; set; } = Keys.Control;
         private Keys InclusiveKey { get; set; } = Keys.Shift;
 
-        private readonly List<DigitalComponent> digitalComponents = new List<DigitalComponent>();
-
+        private Circuit circuit = new Circuit();
         private readonly Selector<DigitalComponent> selector;
         private readonly Transformer<DigitalComponent> transformer = new Transformer<DigitalComponent>();
+
+        private Pin selectedPin;
 
         public FormMain() {
             InitializeComponent();
 
-            selector = new Selector<DigitalComponent>(digitalComponents);
+            selector = new Selector<DigitalComponent>(circuit.Components);
             selector.OnDragging += (s, e) => canvas.Refresh();
             selector.OnEndDrag += Selector_OnEndDrag;
 
@@ -40,14 +42,15 @@
         }
 
         private void FormMain_Load(object sender, EventArgs e) {
+            canvas.Zoom = 2;
             canvas.Center();
 
 
-            digitalComponents.Add(new NotGate("not_gate0", 10, 60));
-            digitalComponents.Add(new NotGate("not_gate0", -40, 20));
-            digitalComponents.Add(new NotGate("not_gate0", 50, -20));
-            digitalComponents.Add(new NotGate("not_gate0", -20, -50));
-            digitalComponents.Add(new NotGate("not_gate0", 90, -90));
+            circuit.Components.Add(new NotGate("not_gate0", 10, 60));
+            circuit.Components.Add(new NotGate("not_gate0", -40, 20));
+            circuit.Components.Add(new NotGate("not_gate0", 50, -20));
+            circuit.Components.Add(new NotGate("not_gate0", -20, -50));
+            circuit.Components.Add(new NotGate("not_gate0", 90, -90));
         }
 
         private void Canvas_Paint(object sender, PaintEventArgs e) {
@@ -57,8 +60,10 @@
             g.InterpolationMode = InterpolationMode.HighQualityBicubic;
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-            foreach (DigitalComponent component in digitalComponents)
-                component.Draw(g);
+            circuit.Draw(g);
+
+            if (selectedPin != null)
+                g.DrawLine(Pens.Blue, canvas.MouseWorldX, canvas.MouseWorldY, selectedPin.GlobalX, selectedPin.GlobalY);
 
             selector.Draw(g);
         }
@@ -66,24 +71,36 @@
         private void Canvas_MouseDown(object sender, MouseEventArgs e) {
             if (e.Button == MouseButtons.Left) {
 
-                bool additiveMode = ModifierKeys.HasFlag(AdditiveKey); // Previous selection not cleared.
+                selectedPin = circuit.GetPinOver();
+                if (selectedPin == null) {
 
-                if (!selector.Start(canvas.MouseWorldX, canvas.MouseWorldY, additiveMode, GetItemOver)) {
+                    bool additiveMode = ModifierKeys.HasFlag(AdditiveKey); // Previous selection not cleared.
 
-                    transformer.Clear();
-                    transformer.AddItems(selector.SelectedItems);
-                    transformer.StartDrag(canvas.MouseWorldX, canvas.MouseWorldY);
+                    if (!selector.Start(canvas.MouseWorldX, canvas.MouseWorldY, additiveMode, (x, y) => circuit.GetComponentOver())) {
 
-                    canvas.Refresh();
+                        transformer.Clear();
+                        transformer.AddItems(selector.SelectedItems);
+                        transformer.StartDrag(canvas.MouseWorldX, canvas.MouseWorldY);
+
+                        canvas.Refresh();
+                    }
+
                 }
 
+            } else if (e.Button == MouseButtons.Right) {
+
             }
+
         }
 
         private void Canvas_MouseMove(object sender, MouseEventArgs e) {
-            selector.Drag(canvas.MouseWorldX, canvas.MouseWorldY);
+            bool needsRefresh = circuit.Update(canvas.MouseWorldX, canvas.MouseWorldY);
 
+            selector.Drag(canvas.MouseWorldX, canvas.MouseWorldY);
             transformer.Drag(canvas.MouseWorldX, canvas.MouseWorldY);
+
+            if (needsRefresh || selectedPin != null)
+                canvas.Refresh();
         }
 
         private void Canvas_MouseUp(object sender, MouseEventArgs e) {
@@ -94,8 +111,19 @@
 
                 selector.EndDrag(canvas.MouseWorldX, canvas.MouseWorldY, additiveMode, inclusiveMode);
                 transformer.EndDrag();
+
+                if (selectedPin != null) {
+
+                    Pin nextSelectedPin = circuit.GetPinOver();
+                    if (nextSelectedPin != null)
+                        circuit.AddWire(selectedPin, nextSelectedPin);
+
+                    selectedPin = null;
+                    canvas.Refresh();
+                }
+
             }
-            canvas.Refresh();
+
         }
 
         private void Selector_OnEndDrag(object sender, List<DigitalComponent> selectedItems) {
@@ -105,14 +133,7 @@
         }
 
 
-        // TODO: Improve method.
-        private DigitalComponent GetItemOver(float x, float y) {
-            foreach (DigitalComponent component in digitalComponents) {
-                if (component.ContainsPoint(x, y))
-                    return component;
-            }
-            return null;
-        }
+
 
         #region Menu Strip
 

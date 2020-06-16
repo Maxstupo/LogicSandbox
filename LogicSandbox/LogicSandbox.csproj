@@ -58,10 +58,12 @@
     <Compile Include="Forms\FormMain.Designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="Logic\Circuit.cs" />
     <Compile Include="Logic\Components\DigitalComponent.cs" />
     <Compile Include="Logic\Components\NotGate.cs" />
     <Compile Include="Logic\Pin.cs" />
     <Compile Include="Logic\Polarity.cs" />
+    <Compile Include="Logic\Wire.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shapes\CircleShape.cs" />

@@ -1,5 +1,5 @@
 ﻿namespace Maxstupo.LogicSandbox.Shapes {
-
+    using System;
     using System.Drawing;
     using Maxstupo.LogicSandbox.Utility;
     using Maxstupo.LogicSandbox.Utility.Interaction;
@@ -57,6 +57,12 @@
         public float CornerRadius { get; set; } = 0;
 
 
+        public bool IsMouseOver { get; private set; } = false;
+
+        public event EventHandler OnMouseEnter;
+        public event EventHandler OnMouseLeave;
+
+
         public Shape(float x, float y, float width, float height, Shape parent = null) {
             X = x;
             Y = y;
@@ -67,6 +73,40 @@
             Parent = parent;
         }
 
+
+        public bool Update(float mx, float my) {
+
+            foreach (Shape child in this) { // Check descendants first.
+                if (child.Update(mx, my)) {
+                    if (IsMouseOver) {
+                        IsMouseOver = false;
+                        OnMouseLeave?.Invoke(this, EventArgs.Empty);
+                    }
+                    return true;
+                }
+            }
+
+            bool mouseOver = ContainsPoint(mx, my);
+
+            if (mouseOver && !IsMouseOver) { // Mouse Enter
+                IsMouseOver = true;
+
+                OnMouseEnter?.Invoke(this, EventArgs.Empty);
+                return true;
+
+            } else if (!mouseOver && IsMouseOver) { // Mouse Leave
+                IsMouseOver = false;
+
+                OnMouseLeave?.Invoke(this, EventArgs.Empty);
+                return true;
+
+            }
+
+
+            return mouseOver;
+        }
+
+      
 
         protected abstract void DrawShape(Graphics g);
 
