@@ -13,14 +13,8 @@
 
         protected override bool Process() {
             Pin pinIn = GetPin("in0");
-            Pin pinOut = GetPin("out0");
 
-            bool newValue = !pinIn.Value;
-            bool oldValue = pinOut.Value;
-            
-            SetPinValues(Polarity.Output, newValue);
-
-            return newValue != oldValue;
+            return SetPinValues(Polarity.Output, !pinIn.Value);
         }
 
         protected override void DrawSymbol(Graphics g) {

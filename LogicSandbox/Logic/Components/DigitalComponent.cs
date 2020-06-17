@@ -1,8 +1,8 @@
 ﻿namespace Maxstupo.LogicSandbox.Logic.Components {
+
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
-    using System.Runtime.CompilerServices;
     using Maxstupo.LogicSandbox.Shapes;
     using Maxstupo.LogicSandbox.Utility;
     using Maxstupo.LogicSandbox.Utility.Interaction;
@@ -105,9 +105,18 @@
         /// <summary>
         /// Sets all pins with the specified polarity to the specified value.
         /// </summary>
-        protected void SetPinValues(Polarity polarity, bool newValue) {
-            foreach (Pin pin in GetPins(polarity))
+        /// <returns>True if one or more pin states changed.</returns>
+        protected bool SetPinValues(Polarity polarity, bool newValue) {
+            bool stateChanged = false;
+
+            foreach (Pin pin in GetPins(polarity)) {
+                if (pin.Value != newValue) 
+                    stateChanged = true;
+
                 pin.Value = newValue;
+            }
+
+            return stateChanged;
         }
 
         /// <summary>

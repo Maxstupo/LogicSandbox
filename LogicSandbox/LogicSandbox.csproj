@@ -59,7 +59,10 @@
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
     <Compile Include="Logic\Circuit.cs" />
+    <Compile Include="Logic\Components\BypassComponent.cs" />
     <Compile Include="Logic\Components\DigitalComponent.cs" />
+    <Compile Include="Logic\Components\PortIn.cs" />
+    <Compile Include="Logic\Components\PortOut.cs" />
     <Compile Include="Logic\Components\Power.cs" />
     <Compile Include="Logic\Components\OrGate.cs" />
     <Compile Include="Logic\Components\NotGate.cs" />

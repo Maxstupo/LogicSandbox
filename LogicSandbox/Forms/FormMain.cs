@@ -64,6 +64,8 @@
             circuit.AddComponent(new NotGate("not_gate1", -40, 20));
             circuit.AddComponent(new NotGate("not_gate2", 50, -20));
             circuit.AddComponent(new OrGate("or_gate0", -20, -50));
+            circuit.AddComponent(new PortIn("port_in0", -100, -50));
+            circuit.AddComponent(new PortOut("port_out0", -100, -100));
 
 
 

@@ -17,12 +17,7 @@
 
             bool value = GetPins(Polarity.Input).Any(x => x.Value);
 
-            Pin pinOut = GetPin("out0");
-            bool oldValue = pinOut.Value;
-
-            SetPinValues(Polarity.Output, value);
-
-            return value != oldValue;
+            return SetPinValues(Polarity.Output, value);
         }
 
         protected override void DrawSymbol(Graphics g) {
