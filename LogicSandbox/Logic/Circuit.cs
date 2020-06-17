@@ -5,25 +5,22 @@
     using System.Linq;
     using Maxstupo.LogicSandbox.Logic.Components;
 
+    /// <summary>
+    /// Represents a collection of components that are connected via wires.
+    /// </summary>
     public class Circuit {
 
+        /// <summary>The components of the circuit.</summary>
         public List<DigitalComponent> Components { get; } = new List<DigitalComponent>();
 
+        // A cache used to look-up components using the id.
         private readonly Dictionary<string, DigitalComponent> lookup = new Dictionary<string, DigitalComponent>();
 
         private readonly List<Wire> wires = new List<Wire>();
 
-        public void Clear() {
-            ClearWires();
-
-            lookup.Clear();
-            Components.Clear();
-        }
-
-        public void ClearWires() {
-            wires.Clear();
-        }
-
+        /// <summary>
+        /// Adds a component to the circuit. If the circuit already contains a component with the ID this method wont do anything.
+        /// </summary>
         public void AddComponent(DigitalComponent component) {
             if (lookup.ContainsKey(component.Id))
                 return;
@@ -31,53 +28,11 @@
             Components.Add(component);
         }
 
-        public void Draw(Graphics g) {
-            foreach (DigitalComponent component in Components)
-                component.Draw(g);
-
-            foreach (Wire wire in wires)
-                wire.Draw(g);
-        }
-
-        public bool Update(float x, float y) {
-            bool needsRefresh = false;
-
-            foreach (DigitalComponent component in Components)
-                needsRefresh |= component.Update(x, y);
-
-            return needsRefresh;
-        }
-
-        public Pin GetPinOver() {
-            foreach (DigitalComponent component in Components) {
-                foreach (Pin pin in component) {
-                    if (pin.IsMouseOver)
-                        return pin;
-                }
-            }
-            return null;
-        }
-
-        public DigitalComponent GetComponentOver() {
-            foreach (DigitalComponent component in Components) {
-                if (component.IsMouseOver)
-                    return component;
-            }
-            return null;
-        }
-
-        public bool Step(float stepRate) {
-            bool needsRefresh = false;
-
-            foreach (Wire wire in wires)
-                needsRefresh |= wire.Step(stepRate);
-
-            foreach (DigitalComponent comp in Components)
-                needsRefresh |= comp.Step(stepRate);
-
-            return needsRefresh;
-        }
-
+        /// <summary>
+        /// Adds a wire between to pins. The pins must have different polarities,
+        /// and the input pin provided can't have any wires connected to it.
+        /// If the criteria mentioned isn't met the method wont do anything.
+        /// </summary>
         public void AddWire(Pin pinA, Pin pinB) {
             if (pinA == null || pinB == null)
                 return;
@@ -98,7 +53,91 @@
             wires.Add(new Wire(pinA, pinB));
         }
 
-        // Removes all wires connected to the given pin.
+
+        /// <summary>
+        /// Clears all wires and components. Circuit will be empty after calling this.
+        /// </summary>
+        public void Clear() {
+            ClearWires();
+
+            lookup.Clear();
+            Components.Clear();
+        }
+
+        /// <summary>Clears all wires.</summary>
+        public void ClearWires() {
+            wires.Clear();
+        }
+
+
+        /// <summary>
+        /// Draws all wires and components.
+        /// </summary>
+        public void Draw(Graphics g) {
+            foreach (DigitalComponent component in Components)
+                component.Draw(g);
+
+            foreach (Wire wire in wires)
+                wire.Draw(g);
+        }
+
+        /// <summary>
+        /// Updates the components for user interaction.
+        /// </summary>
+        /// <param name="mx">The mouse position along the x-axis, in pixels.</param>
+        /// <param name="my">The mouse position along the y-axis, in pixels.</param>
+        /// <returns>True if the circuit needs to be redrawn.</returns>
+        public bool Update(float mx, float my) {
+            bool needsRefresh = false;
+
+            foreach (DigitalComponent component in Components)
+                needsRefresh |= component.Update(mx, my);
+
+            return needsRefresh;
+        }
+
+        /// <summary>
+        /// Simulates the circuit by stepping in time.
+        /// </summary>
+        /// <param name="stepAmount">The amount of time to step by, in milliseconds.</param>
+        /// <returns>True if a state was changed, false otherwise.</returns>
+        public bool Step(float stepRate) {
+            bool needsRefresh = false;
+
+            foreach (Wire wire in wires)
+                needsRefresh |= wire.Step(stepRate);
+
+            foreach (DigitalComponent comp in Components)
+                needsRefresh |= comp.Step(stepRate);
+
+            return needsRefresh;
+        }
+
+
+        /// <summary>
+        /// Returns the first <see cref="Pin"/> the mouse is over.
+        /// </summary>
+        public Pin GetPinOver() {
+            foreach (DigitalComponent component in Components) {
+                foreach (Pin pin in component) {
+                    if (pin.IsMouseOver)
+                        return pin;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Returns the first component the mouse is over.
+        /// </summary>
+        public DigitalComponent GetComponentOver() {
+            return Components.FirstOrDefault(x => x.IsMouseOver);
+        }
+
+
+        /// <summary>
+        /// Removes all wires connected to the provided pin.
+        /// </summary>
         public void RemoveConnectedWires(Pin pin) {
             if (pin == null)
                 return;
@@ -113,20 +152,26 @@
                     wire.P2.Value = false;
             }
         }
-              
-        //Returns the number of wires connected to the given pin.
-        private int GetPinWireCount(Pin pin) {
+
+        /// <summary>
+        /// Returns the number of wires connected to the provided pin.
+        /// </summary>
+        public int GetPinWireCount(Pin pin) {
             return GetWires(pin).Count();
         }
 
-        //Returns all wires attached to the given pin.
-        private IEnumerable<Wire> GetWires(Pin pin) {
+        /// <summary>
+        /// Returns all wires attached to the provided pin.
+        /// </summary>
+        public IEnumerable<Wire> GetWires(Pin pin) {
             string id = pin.FullId;
             return wires.Where(x => x.P1.FullId == id || x.P2.FullId == id);
         }
 
-        // Returns true if p1 and p2 have a connection.
-        private bool HasWireBetween(Pin p1, Pin p2) {
+        /// <summary>
+        /// Returns true if the provided pins are connected.
+        /// </summary>
+        public bool HasWireBetween(Pin p1, Pin p2) {
             string p1Id = p1.FullId;
             string p2Id = p2.FullId;
 

@@ -1,4 +1,5 @@
 ﻿namespace Maxstupo.LogicSandbox.Shapes {
+  
     using System;
     using System.Drawing;
     using Maxstupo.LogicSandbox.Utility;
@@ -73,7 +74,12 @@
             Parent = parent;
         }
 
-
+        /// <summary>
+        /// Updates the <see cref="IsMouseOver"/> state and invokes the required events.
+        /// </summary>
+        /// <param name="mx">The mouse position along the x-axis, in pixels.</param>
+        /// <param name="my">The mouse position along the y-axis, in pixels.</param>
+        /// <returns>True if the mouse is over this component.</returns>
         public bool Update(float mx, float my) {
 
             foreach (Shape child in this) { // Check descendants first.

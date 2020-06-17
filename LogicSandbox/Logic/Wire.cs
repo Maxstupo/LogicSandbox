@@ -2,7 +2,13 @@
 
     using System.Drawing;
 
+    /// <summary>
+    /// Represents a bidirectional connection between two pins.
+    /// </summary>
     public class Wire {
+
+        public static Color WireHighColor { get; set; } = Color.Red;
+        public static Color WireLowColor { get; set; } = Color.Blue;
 
         public Pin P1 { get; }
 
@@ -13,13 +19,22 @@
             this.P2 = p2;
         }
 
+        /// <summary>
+        /// Draws the wire, adjusting the wire color depending on if the wire is active or not.
+        /// </summary>
         public void Draw(Graphics g) {
-            Pen pen = (P1.Value || P2.Value) ? Pens.Red : Pens.Blue;
+            Color color = (P1.Value || P2.Value) ? WireHighColor : WireLowColor;
 
-            g.DrawLine(pen, P1.GlobalX, P1.GlobalY, P2.GlobalX, P2.GlobalY);
+            using (Pen pen = new Pen(color))
+                g.DrawLine(pen, P1.GlobalX, P1.GlobalY, P2.GlobalX, P2.GlobalY);
         }
 
-        public bool Step(float stepRate) {
+        /// <summary>
+        /// Simulates the wire by stepping in time.
+        /// </summary>
+        /// <param name="stepAmount">The amount of time to step by, in milliseconds.</param>
+        /// <returns>True if the state was changed, false otherwise.</returns>
+        public bool Step(float stepAmount) {
             bool drivingValue = P1.Polarity == Polarity.Output ? P1.Value : P2.Value;
             bool otherValue = P1.Polarity == Polarity.Output ? P2.Value : P1.Value;
 

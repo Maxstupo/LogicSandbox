@@ -5,20 +5,26 @@
     using Maxstupo.LogicSandbox.Logic.Components;
     using Maxstupo.LogicSandbox.Shapes;
 
+    /// <summary>
+    /// Represents a IO pin on a component, that can have a logic state and polarity.
+    /// </summary>
     public class Pin : CircleShape {
 
         public static Color PinHighColor { get; set; } = Color.Red;
         public static Color PinLowColor { get; set; } = Color.Black;
         public static Color PinSelectedColor { get; set; } = Color.FromArgb(200, 200, 0);
 
-
+        /// <summary>A local ID identifying this pin.</summary>
         public string Id { get; }
 
+        /// <summary>A fully qualified ID, uniquely identifying this pin.</summary>
         public string FullId => $"{((DigitalComponent) Parent).Id}.{Id}";
 
+        /// <summary>The polarity of this pin. Is it an input or output?</summary>
         public Polarity Polarity { get; }
 
         private bool value = false;
+        /// <summary>The logic state of the pin. (true = logic high, false = logic low)</summary>
         public bool Value {
             get => value;
             set {

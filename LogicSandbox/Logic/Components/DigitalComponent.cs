@@ -42,7 +42,7 @@
         /// </summary>
         public float ProcessInterval { get; protected set; } = 5;
 
-
+        // A cache of pins used for quick look-up by their id.
         private readonly Dictionary<string, Pin> pins = new Dictionary<string, Pin>();
 
 
