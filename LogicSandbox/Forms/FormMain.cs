@@ -5,6 +5,7 @@
     using System.Diagnostics;
     using System.Drawing;
     using System.Drawing.Drawing2D;
+    using System.IO;
     using System.Linq;
     using System.Windows.Forms;
     using Maxstupo.LogicSandbox.Logic;
@@ -23,6 +24,8 @@
         private readonly Selector<DigitalComponent> selector;
         private readonly Transformer<DigitalComponent> transformer = new Transformer<DigitalComponent>();
 
+        private readonly ImageList componentThumbnailList = new ImageList { ColorDepth = ColorDepth.Depth32Bit };
+
         private Pin selectedPin;
 
         public FormMain() {
@@ -40,6 +43,15 @@
             canvas.MouseDown += Canvas_MouseDown;
             canvas.MouseMove += Canvas_MouseMove;
             canvas.MouseUp += Canvas_MouseUp;
+
+            // TEMP: Replace timer with something better.
+            Timer timer = new Timer();
+            timer.Tick += (s, e) => {
+                if (circuit.Step(1))
+                    canvas.Refresh();
+            };
+            timer.Interval = 10;
+            timer.Start();
         }
 
         private void FormMain_Load(object sender, EventArgs e) {
@@ -52,6 +64,30 @@
             circuit.AddComponent(new NotGate("not_gate1", -40, 20));
             circuit.AddComponent(new NotGate("not_gate2", 50, -20));
             circuit.AddComponent(new OrGate("or_gate0", -20, -50));
+
+
+
+
+            // TEMP: Component thumbnail.
+            DigitalComponent dc = new NotGate("ng1", 0, 0);
+            dc.X += DigitalComponent.PinDiameter / 2f;
+            int width = (int) (dc.Width + DigitalComponent.PinDiameter);
+            int height = (int) dc.Height;
+
+            Image thumbnail = new Bitmap(width, height + 1);
+            using (Graphics g = Graphics.FromImage(thumbnail)) {
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+                dc.Draw(g);
+            }
+
+            componentThumbnailList.ImageSize = thumbnail.Size;
+            componentThumbnailList.Images.Add(thumbnail);
+            lvComponentLibrary.Items.Add(dc.Label, componentThumbnailList.Images.Count - 1);
+
+
+            lvComponentLibrary.View = View.LargeIcon;
+            lvComponentLibrary.LargeImageList = componentThumbnailList;
+
         }
 
         private void Canvas_Paint(object sender, PaintEventArgs e) {
@@ -70,7 +106,7 @@
         }
 
         private void Canvas_MouseDown(object sender, MouseEventArgs e) {
-      
+
             if (e.Button == MouseButtons.Left) {
 
                 selectedPin = circuit.GetPinOver();

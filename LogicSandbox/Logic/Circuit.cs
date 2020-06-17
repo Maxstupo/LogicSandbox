@@ -1,33 +1,14 @@
 ﻿namespace Maxstupo.LogicSandbox.Logic {
-    using System;
-    using System.Collections;
+
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
     using Maxstupo.LogicSandbox.Logic.Components;
 
-    public class Wire {
-
-        public Pin P1 { get; }
-
-        public Pin P2 { get; }
-
-        public Wire(Pin p1, Pin p2) {
-            this.P1 = p1;
-            this.P2 = p2;
-        }
-
-        public void Draw(Graphics g) {
-            Pen pen = (P1.Value || P2.Value) ? Pens.Red : Pens.Blue;
-
-            g.DrawLine(pen, P1.GlobalX, P1.GlobalY, P2.GlobalX, P2.GlobalY);
-        }
-
-    }
-
     public class Circuit {
 
         public List<DigitalComponent> Components { get; } = new List<DigitalComponent>();
+
         private readonly Dictionary<string, DigitalComponent> lookup = new Dictionary<string, DigitalComponent>();
 
         private readonly List<Wire> wires = new List<Wire>();
@@ -85,6 +66,18 @@
             return null;
         }
 
+        public bool Step(float stepRate) {
+            bool needsRefresh = false;
+
+            foreach (Wire wire in wires)
+                needsRefresh |= wire.Step(stepRate);
+
+            foreach (DigitalComponent comp in Components)
+                needsRefresh |= comp.Step(stepRate);
+
+            return needsRefresh;
+        }
+
         public void AddWire(Pin pinA, Pin pinB) {
             if (pinA == null || pinB == null)
                 return;
@@ -99,9 +92,9 @@
 
             // Ensure input pins can only have one wire connected.
             Pin inputPin = pinB.Polarity == Polarity.Input ? pinB : pinA;
-            if (GetPinWireCount(inputPin) > 0) 
+            if (GetPinWireCount(inputPin) > 0)
                 return;
-            
+
             wires.Add(new Wire(pinA, pinB));
         }
 
@@ -110,16 +103,22 @@
             if (pin == null)
                 return;
 
-            foreach (Wire wire in GetWires(pin).ToList())
+            foreach (Wire wire in GetWires(pin).ToList()) {
                 wires.Remove(wire);
+
+                if (wire.P1.Polarity == Polarity.Input)
+                    wire.P1.Value = false;
+
+                if (wire.P2.Polarity == Polarity.Input)
+                    wire.P2.Value = false;
+            }
         }
-
-
+              
         //Returns the number of wires connected to the given pin.
         private int GetPinWireCount(Pin pin) {
             return GetWires(pin).Count();
-        }    
-        
+        }
+
         //Returns all wires attached to the given pin.
         private IEnumerable<Wire> GetWires(Pin pin) {
             string id = pin.FullId;

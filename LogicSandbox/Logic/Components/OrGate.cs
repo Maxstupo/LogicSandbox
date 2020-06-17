@@ -1,14 +1,28 @@
 ﻿namespace Maxstupo.LogicSandbox.Logic.Components {
-
-    using System;
+   
     using System.Drawing;
+    using System.Linq;
 
     public sealed class OrGate : DigitalComponent {
 
-        public OrGate(string id, float x, float y) : base(id, "NOT", x, y, 34, 34) {
-            new Pin(this, "in0", Polarity.Input, 0, 0.25f, 10).PercentagePosition = true;
-            new Pin(this, "in1", Polarity.Input, 0, 0.75f, 10).PercentagePosition = true;
-            new Pin(this, "out2", Polarity.Output, 1, 0.5f, 10).PercentagePosition = true;
+        public OrGate(string id, float x, float y) : base(id, "OR", x, y, 34, 34) {
+
+            AddPin("in0", Polarity.Input);
+            AddPin("in1", Polarity.Input);
+            AddPin("out0", Polarity.Output);
+
+        }
+
+        protected override bool Process() {
+
+            bool value = GetPins(Polarity.Input).Any(x => x.Value);
+
+            Pin pinOut = GetPin("out0");
+            bool oldValue = pinOut.Value;
+
+            SetPinValues(Polarity.Output, value);
+
+            return value != oldValue;
         }
 
         protected override void DrawSymbol(Graphics g) {

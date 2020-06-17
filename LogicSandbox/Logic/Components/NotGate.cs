@@ -1,13 +1,26 @@
 ﻿namespace Maxstupo.LogicSandbox.Logic.Components {
-
-    using System;
+    
     using System.Drawing;
 
     public sealed class NotGate : DigitalComponent {
 
         public NotGate(string id, float x, float y) : base(id, "NOT", x, y, 34, 34) {
-            new Pin(this, "in0", Polarity.Input, 0, 0.5f, 10).PercentagePosition = true;
-            new Pin(this, "out0", Polarity.Output, 1, 0.5f, 10).PercentagePosition = true;
+
+            AddPin("in0", Polarity.Input);
+            AddPin("out0", Polarity.Output);
+
+        }
+
+        protected override bool Process() {
+            Pin pinIn = GetPin("in0");
+            Pin pinOut = GetPin("out0");
+
+            bool newValue = !pinIn.Value;
+            bool oldValue = pinOut.Value;
+            
+            SetPinValues(Polarity.Output, newValue);
+
+            return newValue != oldValue;
         }
 
         protected override void DrawSymbol(Graphics g) {

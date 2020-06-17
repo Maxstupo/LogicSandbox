@@ -55,7 +55,14 @@
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.canvas = new Maxstupo.LogicSandbox.Controls.Canvas();
+            this.lvComponentLibrary = new System.Windows.Forms.ListView();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.menuStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip
@@ -313,26 +320,62 @@
             this.canvas.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
             this.canvas.Dock = System.Windows.Forms.DockStyle.Fill;
             this.canvas.InvertedScrollWheel = false;
-            this.canvas.Location = new System.Drawing.Point(0, 24);
+            this.canvas.Location = new System.Drawing.Point(0, 0);
             this.canvas.Name = "canvas";
             this.canvas.PanButton = System.Windows.Forms.MouseButtons.Middle;
-            this.canvas.PanPositionX = 8000F;
-            this.canvas.PanPositionY = 4260F;
+            this.canvas.PanPositionX = 8328.5F;
+            this.canvas.PanPositionY = 4473F;
             this.canvas.ScrollWheelMultiplier = 0.03F;
             this.canvas.ScrollWheelZoom = true;
-            this.canvas.Size = new System.Drawing.Size(800, 426);
+            this.canvas.Size = new System.Drawing.Size(657, 426);
             this.canvas.TabIndex = 0;
             this.canvas.Zoom = 1F;
             this.canvas.ZoomMaximum = 5F;
             this.canvas.ZoomMinimum = 0.05F;
             this.canvas.ZoomMouseFocus = true;
             // 
+            // lvComponentLibrary
+            // 
+            this.lvComponentLibrary.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lvComponentLibrary.HideSelection = false;
+            this.lvComponentLibrary.Location = new System.Drawing.Point(0, 0);
+            this.lvComponentLibrary.Name = "lvComponentLibrary";
+            this.lvComponentLibrary.Size = new System.Drawing.Size(139, 426);
+            this.lvComponentLibrary.TabIndex = 2;
+            this.lvComponentLibrary.UseCompatibleStateImageBehavior = false;
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 24);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.lvComponentLibrary);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.canvas);
+            this.splitContainer1.Size = new System.Drawing.Size(800, 426);
+            this.splitContainer1.SplitterDistance = 139;
+            this.splitContainer1.TabIndex = 3;
+            // 
+            // statusStrip
+            // 
+            this.statusStrip.Location = new System.Drawing.Point(0, 428);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Size = new System.Drawing.Size(800, 22);
+            this.statusStrip.TabIndex = 4;
+            this.statusStrip.Text = "statusStrip1";
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.canvas);
+            this.Controls.Add(this.statusStrip);
+            this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip);
             this.MainMenuStrip = this.menuStrip;
             this.Name = "FormMain";
@@ -341,6 +384,10 @@
             this.Load += new System.EventHandler(this.FormMain_Load);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -379,6 +426,9 @@
         private System.Windows.Forms.ToolStripMenuItem exportTsmi;
         private System.Windows.Forms.ToolStripMenuItem exportAsImageTsmi;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ListView lvComponentLibrary;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.StatusStrip statusStrip;
     }
 }
 

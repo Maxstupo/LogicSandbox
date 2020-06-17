@@ -1,6 +1,6 @@
 ﻿namespace Maxstupo.LogicSandbox.Logic {
+
     using System;
-    using System.Collections.Generic;
     using System.Drawing;
     using Maxstupo.LogicSandbox.Logic.Components;
     using Maxstupo.LogicSandbox.Shapes;
