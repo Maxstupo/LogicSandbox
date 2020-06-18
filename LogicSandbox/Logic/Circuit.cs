@@ -1,5 +1,5 @@
 ﻿namespace Maxstupo.LogicSandbox.Logic {
-
+    using System;
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
@@ -22,10 +22,39 @@
         /// Adds a component to the circuit. If the circuit already contains a component with the ID this method wont do anything.
         /// </summary>
         public void AddComponent(DigitalComponent component) {
-            if (lookup.ContainsKey(component.Id))
+            if (lookup.ContainsKey(component.Id)) {
+                Console.WriteLine($"Component with ID already in circuit: {component.Id}");
                 return;
+            }
+
             lookup.Add(component.Id, component);
             Components.Add(component);
+
+            Console.WriteLine($"Added {component.GetType().Name} component with ID \"{component.Id}\"");
+        }
+
+        /// <summary>
+        /// Removes the given component from the circuit.
+        /// </summary>
+        public void RemoveComponent(DigitalComponent component) {
+            if (component == null)
+                return;
+            RemoveComponent(component.Id);
+        }
+
+        /// <summary>
+        /// Removes the given component from the circuit using its ID.
+        /// </summary>
+        public void RemoveComponent(string id) {
+            if (id == null)
+                return;
+
+            if (lookup.Remove(id)) {
+                Console.WriteLine($"Removing component with ID \"{id}\"");
+                Components.RemoveAll(x => x.Id == id);
+            } else {
+                Console.WriteLine($"Component with ID \"{id}\" doesn't exist in circuit.");
+            }
         }
 
         /// <summary>
@@ -182,6 +211,7 @@
                 return (s1 == p1Id || s1 == p2Id) && (s2 == p1Id || s2 == p2Id);
             });
         }
+
 
     }
 

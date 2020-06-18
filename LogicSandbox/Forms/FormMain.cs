@@ -5,13 +5,10 @@
     using System.Diagnostics;
     using System.Drawing;
     using System.Drawing.Drawing2D;
-    using System.IO;
-    using System.Linq;
     using System.Windows.Forms;
     using Maxstupo.LogicSandbox.Logic;
     using Maxstupo.LogicSandbox.Logic.Components;
     using Maxstupo.LogicSandbox.Properties;
-    using Maxstupo.LogicSandbox.Shapes;
     using Maxstupo.LogicSandbox.Utility.Interaction;
 
     public partial class FormMain : Form {
@@ -27,6 +24,9 @@
         private readonly ImageList componentThumbnailList = new ImageList { ColorDepth = ColorDepth.Depth32Bit };
 
         private Pin selectedPin;
+
+        /// <summary>The component that is currently being dragged in or out of the canvas area.</summary>
+        private DigitalComponent pendingComponent;
 
         public FormMain() {
             InitializeComponent();
@@ -54,42 +54,55 @@
             timer.Start();
         }
 
+
+
         private void FormMain_Load(object sender, EventArgs e) {
             canvas.Zoom = 2; // TEMP: Zoom Level.
             canvas.Center();
 
-            // TEMP: Components
-            circuit.AddComponent(new Power("pwr0", -10, -60));
-            circuit.AddComponent(new NotGate("not_gate0", 10, 60));
-            circuit.AddComponent(new NotGate("not_gate1", -40, 20));
-            circuit.AddComponent(new NotGate("not_gate2", 50, -20));
-            circuit.AddComponent(new OrGate("or_gate0", -20, -50));
-            circuit.AddComponent(new PortIn("port_in0", -100, -50));
-            circuit.AddComponent(new PortOut("port_out0", -100, -100));
+            // TEMP: Allow auto discovery of components.
+            // TEMP: move to more suitable location.
+            AddComponentToLibrary(new Power("", 0, 0));
+            AddComponentToLibrary(new NotGate("", 0, 0));
+            AddComponentToLibrary(new OrGate("", 0, 0));
+            AddComponentToLibrary(new PortIn("", 0, 0));
+            AddComponentToLibrary(new PortOut("", 0, 0));
 
+            componentThumbnailList.ImageSize = new Size(44, 44);
 
+            lvComponentLibrary.View = View.LargeIcon;
+            lvComponentLibrary.LargeImageList = componentThumbnailList;
+        }
 
+        // TEMP: move to more suitable location.
+        private void AddComponentToLibrary(DigitalComponent dc) {
+            Image thumbnail = GenerateComponentThumbnail(dc);
 
-            // TEMP: Component thumbnail.
-            DigitalComponent dc = new NotGate("ng1", 0, 0);
+            componentThumbnailList.Images.Add(thumbnail);
+
+            ListViewItem item = lvComponentLibrary.Items.Add(dc.Label, componentThumbnailList.Images.Count - 1);
+            item.Tag = dc.GetType();
+        }
+
+        // TEMP: move to more suitable location.
+        private Image GenerateComponentThumbnail(DigitalComponent dc) {
             dc.X += DigitalComponent.PinDiameter / 2f;
+
             int width = (int) (dc.Width + DigitalComponent.PinDiameter);
             int height = (int) dc.Height;
 
             Image thumbnail = new Bitmap(width, height + 1);
             using (Graphics g = Graphics.FromImage(thumbnail)) {
                 g.SmoothingMode = SmoothingMode.AntiAlias;
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
                 dc.Draw(g);
             }
 
-            componentThumbnailList.ImageSize = thumbnail.Size;
-            componentThumbnailList.Images.Add(thumbnail);
-            lvComponentLibrary.Items.Add(dc.Label, componentThumbnailList.Images.Count - 1);
+            dc.X -= DigitalComponent.PinDiameter / 2f;
 
-
-            lvComponentLibrary.View = View.LargeIcon;
-            lvComponentLibrary.LargeImageList = componentThumbnailList;
-
+            return thumbnail;
         }
 
         private void Canvas_Paint(object sender, PaintEventArgs e) {
@@ -178,11 +191,16 @@
 
 
 
-
         #region Menu Strip
 
         private void exitTsmi_Click(object sender, EventArgs e) {
             Application.Exit();
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e) {
+            foreach (DigitalComponent component in selector.SelectedItems)
+                circuit.RemoveComponent(component);
+            canvas.Refresh();
         }
 
         private void selectAllTsmi_Click(object sender, EventArgs e) {
@@ -213,6 +231,67 @@
         }
 
         #endregion
+
+
+        #region Drag & Drop Components From Library.
+
+        private void LvComponentLibrary_ItemDrag(object sender, ItemDragEventArgs e) {
+            if (pendingComponent != null)
+                return;
+
+            DoDragDrop(e.Item, DragDropEffects.Copy);
+        }
+
+
+        private void Canvas_DragDrop(object sender, DragEventArgs e) {
+            pendingComponent = null;
+        }
+
+        private void Canvas_DragEnter(object sender, DragEventArgs e) {
+            if (pendingComponent != null)
+                return;
+
+            e.Effect = DragDropEffects.Copy;
+
+            if (e.Data.GetData(typeof(ListViewItem)) is ListViewItem item) {
+
+                Point clientPosition = canvas.PointToClient(e.X, e.Y);
+                float x = canvas.ScreenToWorldX(clientPosition.X);
+                float y = canvas.ScreenToWorldY(clientPosition.Y);
+
+                string time = DateTime.Now.Ticks.ToString();
+                pendingComponent = (DigitalComponent) Activator.CreateInstance((Type) item.Tag, $"comp_{((Type) item.Tag).Name.ToLower()}_{time.Substring(time.Length - 4, 4)}", x, y);
+
+                circuit.AddComponent(pendingComponent);
+
+                canvas.Refresh();
+            }
+
+        }
+
+        private void Canvas_DragOver(object sender, DragEventArgs e) {
+            if (pendingComponent == null)
+                return;
+
+            Point clientPosition = canvas.PointToClient(e.X, e.Y);
+            pendingComponent.X = canvas.ScreenToWorldX(clientPosition.X) - pendingComponent.Width / 2f;
+            pendingComponent.Y = canvas.ScreenToWorldY(clientPosition.Y) - pendingComponent.Height / 2f;
+
+            canvas.Refresh();
+        }
+
+        private void Canvas_DragLeave(object sender, EventArgs e) {
+            if (pendingComponent == null)
+                return;
+
+            circuit.RemoveComponent(pendingComponent);
+            pendingComponent = null;
+
+            canvas.Refresh();
+        }
+
+        #endregion
+
 
     }
 

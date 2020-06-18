@@ -37,12 +37,6 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.editTsmi = new System.Windows.Forms.ToolStripMenuItem();
-            this.undoTsmi = new System.Windows.Forms.ToolStripMenuItem();
-            this.redoTsmi = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.cutTsmi = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyTsmi = new System.Windows.Forms.ToolStripMenuItem();
-            this.pasteTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.selectAllTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.deselectAllTsmi = new System.Windows.Forms.ToolStripMenuItem();
@@ -54,10 +48,11 @@
             this.wikiTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutTsmi = new System.Windows.Forms.ToolStripMenuItem();
-            this.canvas = new Maxstupo.LogicSandbox.Controls.Canvas();
             this.lvComponentLibrary = new System.Windows.Forms.ListView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.canvas = new Maxstupo.LogicSandbox.Controls.Canvas();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -169,12 +164,7 @@
             // editTsmi
             // 
             this.editTsmi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.undoTsmi,
-            this.redoTsmi,
-            this.toolStripSeparator3,
-            this.cutTsmi,
-            this.copyTsmi,
-            this.pasteTsmi,
+            this.deleteToolStripMenuItem,
             this.toolStripSeparator4,
             this.selectAllTsmi,
             this.deselectAllTsmi,
@@ -182,57 +172,6 @@
             this.editTsmi.Name = "editTsmi";
             this.editTsmi.Size = new System.Drawing.Size(39, 20);
             this.editTsmi.Text = "&Edit";
-            // 
-            // undoTsmi
-            // 
-            this.undoTsmi.Enabled = false;
-            this.undoTsmi.Name = "undoTsmi";
-            this.undoTsmi.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoTsmi.Size = new System.Drawing.Size(192, 22);
-            this.undoTsmi.Text = "&Undo";
-            // 
-            // redoTsmi
-            // 
-            this.redoTsmi.Enabled = false;
-            this.redoTsmi.Name = "redoTsmi";
-            this.redoTsmi.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.redoTsmi.Size = new System.Drawing.Size(192, 22);
-            this.redoTsmi.Text = "&Redo";
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(189, 6);
-            // 
-            // cutTsmi
-            // 
-            this.cutTsmi.Enabled = false;
-            this.cutTsmi.Image = ((System.Drawing.Image)(resources.GetObject("cutTsmi.Image")));
-            this.cutTsmi.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cutTsmi.Name = "cutTsmi";
-            this.cutTsmi.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.cutTsmi.Size = new System.Drawing.Size(192, 22);
-            this.cutTsmi.Text = "Cu&t";
-            // 
-            // copyTsmi
-            // 
-            this.copyTsmi.Enabled = false;
-            this.copyTsmi.Image = ((System.Drawing.Image)(resources.GetObject("copyTsmi.Image")));
-            this.copyTsmi.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.copyTsmi.Name = "copyTsmi";
-            this.copyTsmi.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.copyTsmi.Size = new System.Drawing.Size(192, 22);
-            this.copyTsmi.Text = "&Copy";
-            // 
-            // pasteTsmi
-            // 
-            this.pasteTsmi.Enabled = false;
-            this.pasteTsmi.Image = ((System.Drawing.Image)(resources.GetObject("pasteTsmi.Image")));
-            this.pasteTsmi.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.pasteTsmi.Name = "pasteTsmi";
-            this.pasteTsmi.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.pasteTsmi.Size = new System.Drawing.Size(192, 22);
-            this.pasteTsmi.Text = "&Paste";
             // 
             // toolStripSeparator4
             // 
@@ -252,7 +191,7 @@
             this.deselectAllTsmi.Name = "deselectAllTsmi";
             this.deselectAllTsmi.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
             this.deselectAllTsmi.Size = new System.Drawing.Size(192, 22);
-            this.deselectAllTsmi.Text = "&Deselect All";
+            this.deselectAllTsmi.Text = "D&eselect All";
             this.deselectAllTsmi.Click += new System.EventHandler(this.deselectAllTsmi_Click);
             // 
             // invertSelectionTsmi
@@ -315,25 +254,6 @@
             this.aboutTsmi.Size = new System.Drawing.Size(116, 22);
             this.aboutTsmi.Text = "&About...";
             // 
-            // canvas
-            // 
-            this.canvas.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
-            this.canvas.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.canvas.InvertedScrollWheel = false;
-            this.canvas.Location = new System.Drawing.Point(0, 0);
-            this.canvas.Name = "canvas";
-            this.canvas.PanButton = System.Windows.Forms.MouseButtons.Middle;
-            this.canvas.PanPositionX = 8328.5F;
-            this.canvas.PanPositionY = 4473F;
-            this.canvas.ScrollWheelMultiplier = 0.03F;
-            this.canvas.ScrollWheelZoom = true;
-            this.canvas.Size = new System.Drawing.Size(657, 426);
-            this.canvas.TabIndex = 0;
-            this.canvas.Zoom = 1F;
-            this.canvas.ZoomMaximum = 5F;
-            this.canvas.ZoomMinimum = 0.05F;
-            this.canvas.ZoomMouseFocus = true;
-            // 
             // lvComponentLibrary
             // 
             this.lvComponentLibrary.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -343,6 +263,7 @@
             this.lvComponentLibrary.Size = new System.Drawing.Size(139, 426);
             this.lvComponentLibrary.TabIndex = 2;
             this.lvComponentLibrary.UseCompatibleStateImageBehavior = false;
+            this.lvComponentLibrary.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.LvComponentLibrary_ItemDrag);
             // 
             // splitContainer1
             // 
@@ -361,6 +282,30 @@
             this.splitContainer1.SplitterDistance = 139;
             this.splitContainer1.TabIndex = 3;
             // 
+            // canvas
+            // 
+            this.canvas.AllowDrop = true;
+            this.canvas.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.canvas.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.canvas.InvertedScrollWheel = false;
+            this.canvas.Location = new System.Drawing.Point(0, 0);
+            this.canvas.Name = "canvas";
+            this.canvas.PanButton = System.Windows.Forms.MouseButtons.Middle;
+            this.canvas.PanPositionX = 9642.5F;
+            this.canvas.PanPositionY = 5325F;
+            this.canvas.ScrollWheelMultiplier = 0.03F;
+            this.canvas.ScrollWheelZoom = true;
+            this.canvas.Size = new System.Drawing.Size(657, 426);
+            this.canvas.TabIndex = 0;
+            this.canvas.Zoom = 1F;
+            this.canvas.ZoomMaximum = 5F;
+            this.canvas.ZoomMinimum = 0.05F;
+            this.canvas.ZoomMouseFocus = true;
+            this.canvas.DragDrop += new System.Windows.Forms.DragEventHandler(this.Canvas_DragDrop);
+            this.canvas.DragEnter += new System.Windows.Forms.DragEventHandler(this.Canvas_DragEnter);
+            this.canvas.DragOver += new System.Windows.Forms.DragEventHandler(this.Canvas_DragOver);
+            this.canvas.DragLeave += new System.EventHandler(this.Canvas_DragLeave);
+            // 
             // statusStrip
             // 
             this.statusStrip.Location = new System.Drawing.Point(0, 428);
@@ -368,6 +313,14 @@
             this.statusStrip.Size = new System.Drawing.Size(800, 22);
             this.statusStrip.TabIndex = 4;
             this.statusStrip.Text = "statusStrip1";
+            // 
+            // deleteToolStripMenuItem
+            // 
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.deleteToolStripMenuItem.Text = "&Delete";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
             // FormMain
             // 
@@ -406,12 +359,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem exitTsmi;
         private System.Windows.Forms.ToolStripMenuItem editTsmi;
-        private System.Windows.Forms.ToolStripMenuItem undoTsmi;
-        private System.Windows.Forms.ToolStripMenuItem redoTsmi;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private System.Windows.Forms.ToolStripMenuItem cutTsmi;
-        private System.Windows.Forms.ToolStripMenuItem copyTsmi;
-        private System.Windows.Forms.ToolStripMenuItem pasteTsmi;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem selectAllTsmi;
         private System.Windows.Forms.ToolStripMenuItem optionsTsmi;
@@ -429,6 +376,7 @@
         private System.Windows.Forms.ListView lvComponentLibrary;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.StatusStrip statusStrip;
+        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
     }
 }
 

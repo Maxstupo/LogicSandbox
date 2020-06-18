@@ -353,5 +353,12 @@
         }
 
         #endregion
+
+        /// <inheritdoc cref="Control.PointToClient(Point)"/>
+        /// <returns>A Point that represents the converted x,y position in c</returns>
+        public Point PointToClient(float x, float y) {
+            return PointToClient(new Point((int) x, (int) y));
+        }
+
     }
 }
