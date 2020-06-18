@@ -50,8 +50,12 @@
             if (id == null)
                 return;
 
-            if (lookup.Remove(id)) {
+            if (lookup.TryGetValue(id, out DigitalComponent component)) {
                 Console.WriteLine($"Removing component with ID \"{id}\"");
+
+                foreach(Pin pin in component.Pins) 
+                    RemoveConnectedWires(pin);                
+
                 Components.RemoveAll(x => x.Id == id);
             } else {
                 Console.WriteLine($"Component with ID \"{id}\" doesn't exist in circuit.");

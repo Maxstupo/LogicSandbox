@@ -45,6 +45,7 @@
         // A cache of pins used for quick look-up by their id.
         private readonly Dictionary<string, Pin> pins = new Dictionary<string, Pin>();
 
+        public IReadOnlyList<Pin> Pins => pins.Values.ToList().AsReadOnly();
 
         public DigitalComponent(string id, string label, float x, float y, float width, float height) : base(x, y, width, height, null) {
             Id = id;
