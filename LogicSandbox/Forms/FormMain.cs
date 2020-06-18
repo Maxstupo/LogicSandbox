@@ -5,6 +5,7 @@
     using System.Diagnostics;
     using System.Drawing;
     using System.Drawing.Drawing2D;
+    using System.Linq;
     using System.Windows.Forms;
     using Maxstupo.LogicSandbox.Logic;
     using Maxstupo.LogicSandbox.Logic.Components;
@@ -198,8 +199,10 @@
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e) {
-            foreach (DigitalComponent component in selector.SelectedItems)
+            foreach (DigitalComponent component in selector.SelectedItems.ToList()) {
+                selector.Deselect(component);
                 circuit.RemoveComponent(component);
+            }
             canvas.Refresh();
         }
 

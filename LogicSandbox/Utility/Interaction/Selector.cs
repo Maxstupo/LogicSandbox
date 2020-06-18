@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
+    using Maxstupo.LogicSandbox.Logic.Components;
 
     /// <summary>
     /// Handles selecting rectangular items using a selection box or clicking on items. An optional interface <see cref="ISelectable"/> can be implemented on the selection objects to provide selection notifcations.
@@ -137,7 +138,13 @@
         /// <summary>Selects the specified item, and notifies it - <see cref="ISelectable.OnSelected"/></summary>
         public void Select(T item) {
             selectedItems.Add(item);
-            NotifyItems(true);
+            NotifyItem(item,true);
+        }
+
+        /// <summary>Deselects the specified item, and notifies it - <see cref="ISelectable.OnDeselected"/></summary>
+        public void Deselect(T item) {
+            selectedItems.Remove(item);
+            NotifyItem(item, false);
         }
 
         /// <summary>Selects all currently available items from the <see cref="ItemSource"/>. Notifies items - <see cref="ISelectable.OnSelected"/></summary>
@@ -165,13 +172,16 @@
         }
 
         private void NotifyItems(bool isSelected) {
-            foreach (T item in selectedItems) {
-                if (item is ISelectable selectable) {
-                    if (isSelected) {
-                        selectable.OnSelected();
-                    } else {
-                        selectable.OnDeselected();
-                    }
+            foreach (T item in selectedItems) 
+                NotifyItem(item, isSelected);                        
+        }
+
+        private void NotifyItem(T item, bool isSelected) {
+            if (item is ISelectable selectable) {
+                if (isSelected) {
+                    selectable.OnSelected();
+                } else {
+                    selectable.OnDeselected();
                 }
             }
         }

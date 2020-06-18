@@ -1,4 +1,5 @@
 ﻿namespace Maxstupo.LogicSandbox.Logic {
+  
     using System;
     using System.Collections.Generic;
     using System.Drawing;
