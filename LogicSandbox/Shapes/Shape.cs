@@ -1,5 +1,5 @@
 ﻿namespace Maxstupo.LogicSandbox.Shapes {
-  
+
     using System;
     using System.Drawing;
     using Maxstupo.LogicSandbox.Utility;
@@ -8,6 +8,7 @@
     /// <summary>
     /// Represents a 2D shape, that can have sub-shapes. Provides methods for drawing, and supports positioning relative to parent.
     /// </summary>
+    // Implements rectangle interface as any shape can have a rectangular bounding-box
     public abstract class Shape : Node<Shape>, IRectangle {
 
         private float x;
@@ -49,7 +50,6 @@
             }
         }
 
-
         public Color? BackgroundColor { get; set; } = Color.Gray;
 
         public Color? OutlineColor { get; set; } = null;
@@ -58,61 +58,26 @@
         public float CornerRadius { get; set; } = 0;
 
 
-        public bool IsMouseOver { get; private set; } = false;
+        public bool IsMouseOver { get; private set; }
+        public bool IsMousePressed { get; private set; }
 
-        public event EventHandler OnMouseEnter;
-        public event EventHandler OnMouseLeave;
+        public event EventHandler OnMouseEntered;
+        public event EventHandler OnMouseLeft;
 
+        public event EventHandler OnMousePressed;
+        public event EventHandler OnMouseReleased;
 
-        public Shape(float x, float y, float width, float height, Shape parent = null) {
+        public Shape(float x, float y, float width, float height) {
             X = x;
             Y = y;
             Width = width;
             Height = height;
-
-            OnParentChange += (s, e) => UpdateGlobalPosition();
-            Parent = parent;
         }
 
-        /// <summary>
-        /// Updates the <see cref="IsMouseOver"/> state and invokes the required events.
-        /// </summary>
-        /// <param name="mx">The mouse position along the x-axis, in pixels.</param>
-        /// <param name="my">The mouse position along the y-axis, in pixels.</param>
-        /// <returns>True if the mouse is over this component.</returns>
-        public bool Update(float mx, float my) {
-
-            foreach (Shape child in this) { // Check descendants first.
-                if (child.Update(mx, my)) {
-                    if (IsMouseOver) {
-                        IsMouseOver = false;
-                        OnMouseLeave?.Invoke(this, EventArgs.Empty);
-                    }
-                    return true;
-                }
-            }
-
-            bool mouseOver = ContainsPoint(mx, my);
-
-            if (mouseOver && !IsMouseOver) { // Mouse Enter
-                IsMouseOver = true;
-
-                OnMouseEnter?.Invoke(this, EventArgs.Empty);
-                return true;
-
-            } else if (!mouseOver && IsMouseOver) { // Mouse Leave
-                IsMouseOver = false;
-
-                OnMouseLeave?.Invoke(this, EventArgs.Empty);
-                return true;
-
-            }
-
-
-            return mouseOver;
+        protected override void OnParentChanged() {
+            base.OnParentChanged();
+            UpdateGlobalPosition();
         }
-
-      
 
         protected abstract void DrawShape(Graphics g);
 
@@ -126,6 +91,85 @@
 
         public abstract bool ContainsPoint(float x, float y);
 
+        /// <summary>
+        ///  Updates the <see cref="IsMouseOver"/> and invokes required method events.
+        /// </summary>
+        /// <returns>True if some state changed, requiring the shape to be redrawn.</returns>
+        public bool UpdateState(float x, float y) {
+            UpdateCursorState(x, y, out bool needsRefresh);
+            return needsRefresh;
+        }
+
+        /// <summary>
+        /// Updates the <see cref="IsMouseOver"/> and invokes required method events. Don't call this method, use <see cref="UpdateState(float, float)"/>
+        /// </summary>
+        /// <param name="needsRefresh">True if some state changed, requiring the component to be redrawn.</param>
+        /// <returns>True if the cursor is over this shape. Used for recursion.</returns>
+        private bool UpdateCursorState(float x, float y, out bool needsRefresh) {
+            bool childrenNeedRefresh = false;
+
+            foreach (Shape childShape in this) {
+                if (childShape.UpdateCursorState(x, y, out bool childNeedsRefresh)) {
+                    if (IsMouseOver) { // If the cursor is over a child shape, reset our mouse over state.
+                        IsMouseOver = false;
+                        OnMouseLeave();
+                    }
+
+                    needsRefresh = childNeedsRefresh;
+                    return true;
+                }
+
+                childrenNeedRefresh |= childNeedsRefresh;
+            }
+
+            bool isMouseOver = ContainsPoint(x, y);
+
+            if (isMouseOver && !IsMouseOver) {
+                IsMouseOver = true;
+                OnMouseEnter();
+
+                needsRefresh = true;
+                return true;
+
+            } else if (!isMouseOver && IsMouseOver) {
+                IsMouseOver = false;
+                OnMouseLeave();
+
+                needsRefresh = true;
+                return false;
+
+            }
+
+            needsRefresh = childrenNeedRefresh;
+            return isMouseOver;
+        }
+
+        public void UpdateMouseState(bool isPressed) {
+            if (isPressed && !IsMousePressed) {
+                IsMousePressed = true;
+                OnMousePress();
+            } else if (!isPressed && IsMousePressed) {
+                IsMousePressed = false;
+                OnMouseRelease();
+            }
+                    }
+
+        protected virtual void OnMouseEnter() {
+            OnMouseEntered?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnMouseLeave() {
+            OnMouseLeft?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnMousePress() {
+            OnMousePressed?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnMouseRelease() {
+            OnMouseReleased?.Invoke(this, EventArgs.Empty);
+        }
+
 
         private void UpdateGlobalPosition() {
             GlobalX = (Parent?.GlobalX ?? 0) + ((PercentagePosition && !IsRoot) ? Parent.CalculateXByPercentage(X) : X);
@@ -133,6 +177,35 @@
 
             foreach (Shape child in this)
                 child.UpdateGlobalPosition();
+        }
+
+
+        /// <summary>
+        /// Returns true if the <see cref="IsMouseOver"/> property is true for this shape or its descendants.
+        /// </summary>
+        public bool IsMouseOverOrDescentants() {
+            if (IsMouseOver)
+                return true;
+
+            foreach (Shape child in this) {
+                if (child.IsMouseOverOrDescentants())
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Returns the shape with its <see cref="IsMouseOver"/> property true and is the top-most shape.
+        /// </summary>
+        public Shape GetMouseOverTopMost() {
+            foreach (Shape child in this) {
+                Shape shape = child.GetMouseOverTopMost();
+                if (shape != null)
+                    return shape;
+            }
+
+            return IsMouseOver ? this : null;
         }
 
         protected virtual float CalculateXByPercentage(float x) {

@@ -8,9 +8,9 @@
     /// </summary>
     public class RectangleShape : Shape {
 
-        public RectangleShape() : this(0, 0, 0, 0, null) { }
+        public RectangleShape() : this(0, 0, 0, 0) { }
 
-        public RectangleShape(float x, float y, float width, float height, Shape parent = null) : base(x, y, width, height, parent) { }
+        public RectangleShape(float x, float y, float width, float height) : base(x, y, width, height) { }
 
         public override bool ContainsPoint(float x, float y) {
             return !(x < GlobalX || y < GlobalY || x > (GlobalX + Width) || y > (GlobalY + Height));

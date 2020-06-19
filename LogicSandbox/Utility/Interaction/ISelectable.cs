@@ -5,6 +5,8 @@
     /// </summary>
     public interface ISelectable {
 
+        bool IsSelectable { get; }
+
         /// <summary>
         /// Invoked when the item is selected. Selection state not monitored, method can be invoked repeatly.
         /// </summary>

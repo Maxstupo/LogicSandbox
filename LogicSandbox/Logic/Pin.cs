@@ -33,26 +33,27 @@
             }
         }
 
-        public Pin(DigitalComponent component, string id, Polarity polarity, float x, float y, float diameter) : base(x, y, diameter, component) {
+        public Pin(DigitalComponent component, string id, Polarity polarity, float x, float y, float diameter) : base(x, y, diameter) {
             Id = id;
             Polarity = polarity;
+            Parent = component;
 
             BackgroundColor = (Polarity == Polarity.Input) ? Color.FromArgb(255, 204, 0) : Color.White;
 
             OutlineColor = Color.Black;
             OutlineThickness = 1;
-
-            OnMouseEnter += Pin_OnMouseEnter;
-            OnMouseLeave += Pin_OnMouseLeave;
         }
 
-        private void Pin_OnMouseLeave(object sender, EventArgs e) {
-            OutlineColor = Value ? PinHighColor : PinLowColor;
-        }
-
-        private void Pin_OnMouseEnter(object sender, EventArgs e) {
+        protected override void OnMouseEnter() {
+            base.OnMouseEnter();
             OutlineColor = PinSelectedColor;
         }
+
+        protected override void OnMouseLeave() {
+            base.OnMouseLeave();
+            OutlineColor = Value ? PinHighColor : PinLowColor;
+        }
+   
 
     }
 

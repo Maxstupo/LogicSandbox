@@ -47,7 +47,9 @@
 
         public IReadOnlyList<Pin> Pins => pins.Values.ToList().AsReadOnly();
 
-        public DigitalComponent(string id, string label, float x, float y, float width, float height) : base(x, y, width, height, null) {
+        public bool IsSelectable { get; protected set; } = true;
+
+        public DigitalComponent(string id, string label, float x, float y, float width, float height) : base(x, y, width, height) {
             Id = id;
             Label = label;
 

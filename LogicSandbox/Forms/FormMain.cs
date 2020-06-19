@@ -10,6 +10,7 @@
     using Maxstupo.LogicSandbox.Logic;
     using Maxstupo.LogicSandbox.Logic.Components;
     using Maxstupo.LogicSandbox.Properties;
+    using Maxstupo.LogicSandbox.Shapes;
     using Maxstupo.LogicSandbox.Utility.Interaction;
 
     public partial class FormMain : Form {
@@ -64,6 +65,9 @@
             // TEMP: Allow auto discovery of components.
             // TEMP: move to more suitable location.
             AddComponentToLibrary(new Power("", 0, 0));
+            AddComponentToLibrary(new Toggle("", 0, 0));
+            AddComponentToLibrary(new PushOn("", 0, 0));
+            AddComponentToLibrary(new PushOff("", 0, 0));
             AddComponentToLibrary(new NotGate("", 0, 0));
             AddComponentToLibrary(new OrGate("", 0, 0));
             AddComponentToLibrary(new PortIn("", 0, 0));
@@ -121,16 +125,22 @@
             selector.Draw(g);
         }
 
+        private Shape componentOver;
+
         private void Canvas_MouseDown(object sender, MouseEventArgs e) {
 
             if (e.Button == MouseButtons.Left) {
+
+                componentOver = circuit.GetComponentOver();
+                if (componentOver != null)
+                    componentOver.UpdateMouseState(true);
 
                 selectedPin = circuit.GetPinOver();
                 if (selectedPin == null) {
 
                     bool additiveMode = ModifierKeys.HasFlag(AdditiveKey); // Previous selection not cleared.
 
-                    if (!selector.Start(canvas.MouseWorldX, canvas.MouseWorldY, additiveMode, (x, y) => circuit.GetComponentOver())) {
+                    if (!selector.Start(canvas.MouseWorldX, canvas.MouseWorldY, additiveMode, (x, y) => circuit.GetComponentMouseOverOrDescentants())) {
 
                         transformer.Clear();
                         transformer.AddItems(selector.SelectedItems);
@@ -163,6 +173,10 @@
 
         private void Canvas_MouseUp(object sender, MouseEventArgs e) {
             if (e.Button == MouseButtons.Left) {
+
+                if (componentOver != null)
+                    componentOver.UpdateMouseState(false);
+
 
                 bool additiveMode = ModifierKeys.HasFlag(AdditiveKey); // Previous selection not cleared.
                 bool inclusiveMode = ModifierKeys.HasFlag(InclusiveKey); // Item must be inside of selection bounds. 
