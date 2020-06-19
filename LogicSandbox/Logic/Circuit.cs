@@ -14,11 +14,18 @@
 
         /// <summary>The components of the circuit.</summary>
         public List<DigitalComponent> Components { get; } = new List<DigitalComponent>();
+     
 
         // A cache used to look-up components using the id.
         private readonly Dictionary<string, DigitalComponent> lookup = new Dictionary<string, DigitalComponent>();
 
         private readonly List<Wire> wires = new List<Wire>();
+
+        public int WireCount => wires.Count;
+
+        public Circuit() {
+
+        }
 
         /// <summary>
         /// Adds a component to the circuit. If the circuit already contains a component with the ID this method wont do anything.

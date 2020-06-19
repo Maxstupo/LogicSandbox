@@ -11,7 +11,7 @@
 
         }
 
-        protected override bool Process() {
+        protected override bool Process(float stepAmount) {
             Pin pinIn = GetPin("in0");
 
             return SetPinValues(Polarity.Output, !pinIn.Value);

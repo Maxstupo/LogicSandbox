@@ -37,6 +37,7 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.editTsmi = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.selectAllTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.deselectAllTsmi = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,9 +51,11 @@
             this.aboutTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.lvComponentLibrary = new System.Windows.Forms.ListView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.canvas = new Maxstupo.LogicSandbox.Controls.Canvas();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
-            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.circuitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.simulationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createICToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.canvas = new Maxstupo.LogicSandbox.Controls.Canvas();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -66,6 +69,7 @@
             this.fileTsmi,
             this.editTsmi,
             this.viewTsmi,
+            this.circuitToolStripMenuItem,
             this.optionsTsmi,
             this.helpTsmi});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
@@ -172,6 +176,14 @@
             this.editTsmi.Name = "editTsmi";
             this.editTsmi.Size = new System.Drawing.Size(39, 20);
             this.editTsmi.Text = "&Edit";
+            // 
+            // deleteToolStripMenuItem
+            // 
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.deleteToolStripMenuItem.Text = "&Delete";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
@@ -282,6 +294,37 @@
             this.splitContainer1.SplitterDistance = 139;
             this.splitContainer1.TabIndex = 3;
             // 
+            // statusStrip
+            // 
+            this.statusStrip.Location = new System.Drawing.Point(0, 428);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Size = new System.Drawing.Size(800, 22);
+            this.statusStrip.TabIndex = 4;
+            this.statusStrip.Text = "statusStrip1";
+            // 
+            // circuitToolStripMenuItem
+            // 
+            this.circuitToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.simulationToolStripMenuItem,
+            this.createICToolStripMenuItem});
+            this.circuitToolStripMenuItem.Name = "circuitToolStripMenuItem";
+            this.circuitToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
+            this.circuitToolStripMenuItem.Text = "Circuit";
+            // 
+            // simulationToolStripMenuItem
+            // 
+            this.simulationToolStripMenuItem.Enabled = false;
+            this.simulationToolStripMenuItem.Name = "simulationToolStripMenuItem";
+            this.simulationToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.simulationToolStripMenuItem.Text = "Simulation";
+            // 
+            // createICToolStripMenuItem
+            // 
+            this.createICToolStripMenuItem.Name = "createICToolStripMenuItem";
+            this.createICToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.createICToolStripMenuItem.Text = "Create IC...";
+            this.createICToolStripMenuItem.Click += new System.EventHandler(this.createICToolStripMenuItem_Click);
+            // 
             // canvas
             // 
             this.canvas.AllowDrop = true;
@@ -291,8 +334,8 @@
             this.canvas.Location = new System.Drawing.Point(0, 0);
             this.canvas.Name = "canvas";
             this.canvas.PanButton = System.Windows.Forms.MouseButtons.Middle;
-            this.canvas.PanPositionX = 9642.5F;
-            this.canvas.PanPositionY = 5325F;
+            this.canvas.PanPositionX = 18183.5F;
+            this.canvas.PanPositionY = 10863F;
             this.canvas.ScrollWheelMultiplier = 0.03F;
             this.canvas.ScrollWheelZoom = true;
             this.canvas.Size = new System.Drawing.Size(657, 426);
@@ -305,22 +348,6 @@
             this.canvas.DragEnter += new System.Windows.Forms.DragEventHandler(this.Canvas_DragEnter);
             this.canvas.DragOver += new System.Windows.Forms.DragEventHandler(this.Canvas_DragOver);
             this.canvas.DragLeave += new System.EventHandler(this.Canvas_DragLeave);
-            // 
-            // statusStrip
-            // 
-            this.statusStrip.Location = new System.Drawing.Point(0, 428);
-            this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(800, 22);
-            this.statusStrip.TabIndex = 4;
-            this.statusStrip.Text = "statusStrip1";
-            // 
-            // deleteToolStripMenuItem
-            // 
-            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
-            this.deleteToolStripMenuItem.Text = "&Delete";
-            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
             // FormMain
             // 
@@ -377,6 +404,9 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem circuitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem simulationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem createICToolStripMenuItem;
     }
 }
 

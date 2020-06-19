@@ -1,4 +1,5 @@
 ﻿namespace Maxstupo.LogicSandbox.Logic.Components {
+    
     using System.Drawing;
     using System.Linq;
     using Maxstupo.LogicSandbox.Shapes;
@@ -57,7 +58,7 @@
 
         }
 
-        protected override bool Process() {
+        protected override bool Process(float stepAmount) {
             bool isPowered = GetPins(Polarity.Input).Any(x => x.Value);
             bool value = ButtonState && isPowered;
 

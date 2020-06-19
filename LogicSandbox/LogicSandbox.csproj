@@ -61,6 +61,7 @@
     <Compile Include="Logic\Circuit.cs" />
     <Compile Include="Logic\Components\ButtonComponent.cs" />
     <Compile Include="Logic\Components\BypassComponent.cs" />
+    <Compile Include="Logic\Components\CircuitComponent.cs" />
     <Compile Include="Logic\Components\DigitalComponent.cs" />
     <Compile Include="Logic\Components\PortIn.cs" />
     <Compile Include="Logic\Components\PortOut.cs" />

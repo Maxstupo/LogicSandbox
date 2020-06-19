@@ -15,7 +15,7 @@
 
         }
 
-        protected override bool Process() {
+        protected override bool Process(float stepAmount) {
             return false;
         }
 
