@@ -1,10 +1,11 @@
 ﻿namespace Maxstupo.LogicSandbox.Logic {
-  
+
     using System;
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
     using Maxstupo.LogicSandbox.Logic.Components;
+    using Maxstupo.LogicSandbox.Shapes;
 
     /// <summary>
     /// Represents a collection of components that are connected via wires.
@@ -13,11 +14,18 @@
 
         /// <summary>The components of the circuit.</summary>
         public List<DigitalComponent> Components { get; } = new List<DigitalComponent>();
+     
 
         // A cache used to look-up components using the id.
         private readonly Dictionary<string, DigitalComponent> lookup = new Dictionary<string, DigitalComponent>();
 
         private readonly List<Wire> wires = new List<Wire>();
+
+        public int WireCount => wires.Count;
+
+        public Circuit() {
+
+        }
 
         /// <summary>
         /// Adds a component to the circuit. If the circuit already contains a component with the ID this method wont do anything.
@@ -53,8 +61,8 @@
             if (lookup.TryGetValue(id, out DigitalComponent component)) {
                 Console.WriteLine($"Removing component with ID \"{id}\"");
 
-                foreach(Pin pin in component.Pins) 
-                    RemoveConnectedWires(pin);                
+                foreach (Pin pin in component.Pins)
+                    RemoveConnectedWires(pin);
 
                 Components.RemoveAll(x => x.Id == id);
             } else {
@@ -124,8 +132,8 @@
         public bool Update(float mx, float my) {
             bool needsRefresh = false;
 
-            foreach (DigitalComponent component in Components)
-                needsRefresh |= component.Update(mx, my);
+            foreach (Shape component in Components)
+                needsRefresh |= component.UpdateState(mx, my);
 
             return needsRefresh;
         }
@@ -153,8 +161,8 @@
         /// </summary>
         public Pin GetPinOver() {
             foreach (DigitalComponent component in Components) {
-                foreach (Pin pin in component) {
-                    if (pin.IsMouseOver)
+                foreach (Shape shape in component) {
+                    if (shape.IsMouseOver && shape is Pin pin)
                         return pin;
                 }
             }
@@ -162,11 +170,24 @@
         }
 
         /// <summary>
-        /// Returns the first component the mouse is over.
+        /// Returns the first component that has the mouse over it or one of its child elements.
         /// </summary>
-        public DigitalComponent GetComponentOver() {
-            return Components.FirstOrDefault(x => x.IsMouseOver);
+        public DigitalComponent GetComponentMouseOverOrDescentants() {
+            foreach (DigitalComponent component in Components) {
+                if (component.IsMouseOverOrDescentants())
+                    return component;
+            }
+            return null;
         }
+
+        public Shape GetComponentOver() {
+            foreach (DigitalComponent dc in Components) {
+                Shape shape = dc.GetMouseOverTopMost();
+                if (shape != null) return shape;
+            }
+            return null;
+        }
+
 
 
         /// <summary>

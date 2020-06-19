@@ -10,6 +10,7 @@
     using Maxstupo.LogicSandbox.Logic;
     using Maxstupo.LogicSandbox.Logic.Components;
     using Maxstupo.LogicSandbox.Properties;
+    using Maxstupo.LogicSandbox.Shapes;
     using Maxstupo.LogicSandbox.Utility.Interaction;
 
     public partial class FormMain : Form {
@@ -64,6 +65,9 @@
             // TEMP: Allow auto discovery of components.
             // TEMP: move to more suitable location.
             AddComponentToLibrary(new Power("", 0, 0));
+            AddComponentToLibrary(new Toggle("", 0, 0));
+            AddComponentToLibrary(new PushOn("", 0, 0));
+            AddComponentToLibrary(new PushOff("", 0, 0));
             AddComponentToLibrary(new NotGate("", 0, 0));
             AddComponentToLibrary(new OrGate("", 0, 0));
             AddComponentToLibrary(new PortIn("", 0, 0));
@@ -121,16 +125,22 @@
             selector.Draw(g);
         }
 
+        private Shape componentOver;
+
         private void Canvas_MouseDown(object sender, MouseEventArgs e) {
 
             if (e.Button == MouseButtons.Left) {
+
+                componentOver = circuit.GetComponentOver();
+                if (componentOver != null)
+                    componentOver.UpdateMouseState(true);
 
                 selectedPin = circuit.GetPinOver();
                 if (selectedPin == null) {
 
                     bool additiveMode = ModifierKeys.HasFlag(AdditiveKey); // Previous selection not cleared.
 
-                    if (!selector.Start(canvas.MouseWorldX, canvas.MouseWorldY, additiveMode, (x, y) => circuit.GetComponentOver())) {
+                    if (!selector.Start(canvas.MouseWorldX, canvas.MouseWorldY, additiveMode, (x, y) => circuit.GetComponentMouseOverOrDescentants())) {
 
                         transformer.Clear();
                         transformer.AddItems(selector.SelectedItems);
@@ -164,6 +174,10 @@
         private void Canvas_MouseUp(object sender, MouseEventArgs e) {
             if (e.Button == MouseButtons.Left) {
 
+                if (componentOver != null)
+                    componentOver.UpdateMouseState(false);
+
+
                 bool additiveMode = ModifierKeys.HasFlag(AdditiveKey); // Previous selection not cleared.
                 bool inclusiveMode = ModifierKeys.HasFlag(InclusiveKey); // Item must be inside of selection bounds. 
 
@@ -191,12 +205,71 @@
         }
 
 
+        /// <summary>
+        /// Creates an IC from the provided components, the circuit provided must be the source of the components in the list.
+        /// </summary>
+        public void CreateIC(List<DigitalComponent> components, Circuit baseCircuit) {
+            if (components.Count == 0)
+                return;
+
+            if (!components.Any(x => x is PortOut))
+                return;
+
+            Circuit internalCircuit = new Circuit();
+
+            foreach (DigitalComponent component in components) {
+                internalCircuit.AddComponent(component);
+
+                // Add all wires that are contained to the components list.
+                foreach (Pin pin in component.Pins) {
+                    foreach (Wire wire in baseCircuit.GetWires(pin)) {
+
+                        Pin otherPin = pin.FullId != wire.P1.FullId ? wire.P1 : wire.P2;
+
+                        // Check if wire connects within the components list.
+                        bool contained = false;
+                        foreach (DigitalComponent component2 in components) {
+                            foreach (Pin pin2 in component2.Pins) {
+                                if (pin2.FullId == otherPin.FullId) {
+                                    contained = true;
+                                    break;
+                                }
+                            }
+                            if (contained)
+                                break;
+                        }
+
+                        if (contained)
+                            internalCircuit.AddWire(wire.P1, wire.P2);
+
+                    }
+                }
+
+                baseCircuit.RemoveComponent(component);
+                selector.Deselect(component);
+            }
+
+            Console.WriteLine($"Created IC with {internalCircuit.Components.Count} components and {internalCircuit.WireCount} wires");
+
+            string time = DateTime.Now.Ticks.ToString();
+            CircuitComponent circuitComponent = new CircuitComponent($"comp_ic_{time.Substring(time.Length - 4, 4)}", 0, 0) {
+                InternalCircuit = internalCircuit
+            };
+
+            baseCircuit.AddComponent(circuitComponent);
+            canvas.Refresh();
+        }
 
         #region Menu Strip
 
         private void exitTsmi_Click(object sender, EventArgs e) {
             Application.Exit();
         }
+
+        private void createICToolStripMenuItem_Click(object sender, EventArgs e) {
+            CreateIC(selector.SelectedItems.ToList(), circuit);
+        }
+
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e) {
             foreach (DigitalComponent component in selector.SelectedItems.ToList()) {
@@ -293,8 +366,8 @@
             canvas.Refresh();
         }
 
-        #endregion
 
+        #endregion
 
     }
 

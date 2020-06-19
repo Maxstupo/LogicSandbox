@@ -47,7 +47,9 @@
 
         public IReadOnlyList<Pin> Pins => pins.Values.ToList().AsReadOnly();
 
-        public DigitalComponent(string id, string label, float x, float y, float width, float height) : base(x, y, width, height, null) {
+        public bool IsSelectable { get; protected set; } = true;
+
+        public DigitalComponent(string id, string label, float x, float y, float width, float height) : base(x, y, width, height) {
             Id = id;
             Label = label;
 
@@ -75,6 +77,15 @@
             UpdatePinPositions();
 
             return pin;
+        }
+
+        /// <summary>
+        /// Clears all the pins attached to this component.
+        /// </summary>
+        protected void ClearPins() {
+            foreach (Pin pin in pins.Values)
+                pin.Parent = null;
+            pins.Clear();
         }
 
         /// <summary>
@@ -123,8 +134,9 @@
         /// <summary>
         /// Called when the simulation requires this component to update its state.
         /// </summary>
+        /// <param name="stepAmount">The amount of time to step by, in milliseconds.</param>
         /// <returns>True if the state was changed, false otherwise.</returns>
-        protected abstract bool Process();
+        protected abstract bool Process(float stepAmount);
 
         /// <summary>
         /// Simulates the component by stepping in time.
@@ -136,7 +148,7 @@
 
             if (Ticks > ProcessInterval) {
                 Ticks = 0;
-                return Process();
+                return Process(stepAmount);
             }
 
             return false;

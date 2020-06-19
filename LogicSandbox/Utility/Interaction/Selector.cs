@@ -60,6 +60,9 @@
                 return true;
             }
 
+            if (item is ISelectable s && !s.IsSelectable)
+                Deselect(item);
+
             IReadOnlyList<T> selectedItems = SelectedItems;
 
             bool containsShape = selectedItems.Contains(item);
@@ -137,8 +140,10 @@
 
         /// <summary>Selects the specified item, and notifies it - <see cref="ISelectable.OnSelected"/></summary>
         public void Select(T item) {
+            if (item is ISelectable s && !s.IsSelectable)
+                return;
             selectedItems.Add(item);
-            NotifyItem(item,true);
+            NotifyItem(item, true);
         }
 
         /// <summary>Deselects the specified item, and notifies it - <see cref="ISelectable.OnDeselected"/></summary>
@@ -162,9 +167,13 @@
 
         public void InvertSelection() {
             NotifyItems(false);
-           
-            List<T> invertedSelection = ItemSource.Except(selectedItems).ToList();
-          
+
+            List<T> invertedSelection = ItemSource.Except(selectedItems).Where(x => {
+                if (x is ISelectable s && !s.IsSelectable)
+                    return false;
+                return true;
+            }).ToList();
+
             selectedItems.Clear();
             selectedItems.AddRange(invertedSelection);
 
@@ -172,8 +181,8 @@
         }
 
         private void NotifyItems(bool isSelected) {
-            foreach (T item in selectedItems) 
-                NotifyItem(item, isSelected);                        
+            foreach (T item in selectedItems)
+                NotifyItem(item, isSelected);
         }
 
         private void NotifyItem(T item, bool isSelected) {
@@ -188,6 +197,9 @@
 
         private IEnumerable<T> GetSelectedItems(bool containsMode) {
             foreach (T rect in ItemSource) {
+                if (rect is ISelectable s && !s.IsSelectable)
+                    continue;
+
                 RectangleF componentRect = new RectangleF(rect.X, rect.Y, rect.Width, rect.Height);
 
                 if (Selection.Contains(componentRect) || (!containsMode && Selection.IntersectsWith(componentRect)))

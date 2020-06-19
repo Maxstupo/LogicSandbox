@@ -17,9 +17,9 @@
         public override float Height { get => base.Height; set { base.Height = value; base.Width = value; } }
 
 
-        public CircleShape() : this(0, 0, 0, null) { }
+        public CircleShape() : this(0, 0, 0) { }
 
-        public CircleShape(float x, float y, float diameter, Shape parent = null) : base(x, y, diameter, diameter, parent) { }
+        public CircleShape(float x, float y, float diameter) : base(x, y, diameter, diameter) { }
 
         public override bool ContainsPoint(float x, float y) {
             float dx = x - GlobalX;

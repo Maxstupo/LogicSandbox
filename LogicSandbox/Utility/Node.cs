@@ -3,31 +3,6 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
-  
-    /// <summary>
-    /// Represents an event for <see cref="Node{T}"/> when a child node is added/removed.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class NodeChangeEvent<T> : EventArgs where T : Node<T> {
-        
-        public T Node { get; }
-
-        /// <summary>
-        /// If true the node was added, else it was removed.
-        /// </summary>
-        public bool Added { get; }
-
-        /// <summary>
-        /// Constructs a <see cref="NodeChangeEvent{T}"/>.
-        /// </summary>
-        /// <param name="node">The node in question.</param>
-        /// <param name="added">If true the node was added, else it was removed.</param>
-        public NodeChangeEvent(T node, bool added) {
-            Node = node;
-            Added = added;
-        }
-
-    }
 
     /// <summary>
     /// Represents a tree structure, each node has multiple children nodes and one parent node.
@@ -48,17 +23,17 @@
                 if (parent != null && parent != value) {
                     T node = (T) this;
                     if (parent.children.Remove(node))
-                        parent.OnChildrenChange?.Invoke(parent, new NodeChangeEvent<T>(node, false));
+                        parent.OnChildrenChange(node, false);
                 }
 
                 if (value != null && value != parent) {
                     T node = (T) this;
                     value.children.Add(node);
-                    value.OnChildrenChange?.Invoke(value, new NodeChangeEvent<T>(node, true));
+                    value.OnChildrenChange(node, true);
                 }
 
                 parent = value;
-                OnParentChange?.Invoke(this, EventArgs.Empty);
+                OnParentChanged();
             }
         }
 
@@ -81,14 +56,20 @@
         public int ChildCount => children.Count;
 
         /// <summary>
-        /// Occurs when the parent node changes.
+        /// Invoked when the parent node changes.
         /// </summary>
-        public event EventHandler OnParentChange;
+        protected virtual void OnParentChanged() {
+
+        }
 
         /// <summary>
-        /// Occurs when a child node is added or removed.
+        /// Invoked when a child node is added or removed.
         /// </summary>
-        public event EventHandler<NodeChangeEvent<T>> OnChildrenChange;
+        /// <param name="node">The child object that was added/removed.</param>
+        /// <param name="added">True if the node was added, false if removed.</param>
+        protected virtual void OnChildrenChange(T node, bool added) {
+
+        }
 
         public IEnumerator<T> GetEnumerator() {
             return children.GetEnumerator();

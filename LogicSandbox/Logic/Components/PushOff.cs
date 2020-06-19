@@ -1,0 +1,19 @@
+﻿namespace Maxstupo.LogicSandbox.Logic.Components {
+   
+    public class PushOff : ButtonComponent {
+
+        public PushOff(string id, float x, float y) : base(id, "Push Off", x, y, 34, 34) {
+            ButtonState = true;
+        }
+
+        protected override void OnButtonPressed() {
+            ButtonState = false;
+        }
+
+        protected override void OnButtonReleased() {
+            ButtonState = true;
+        }
+
+    }
+
+}
