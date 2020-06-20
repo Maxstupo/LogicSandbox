@@ -61,6 +61,15 @@ namespace Maxstupo.LogicSandbox.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Logic Sandbox Circuits (*.cls)|*.cls|JSON Files (*.json)|*.json|All Files (*.*)|*.*.
+        /// </summary>
+        internal static string FileFilter {
+            get {
+                return ResourceManager.GetString("FileFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to https://github.com/Maxstupo/LogicSandbox/wiki.
         /// </summary>
         internal static string WikiUrl {

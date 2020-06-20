@@ -4,6 +4,10 @@
 
     public sealed class NotGate : DigitalComponent {
 
+        public NotGate(string id) : this(id, 0, 0) {
+
+        }
+
         public NotGate(string id, float x, float y) : base(id, "NOT", x, y, 34, 34) {
 
             AddPin("in0", Polarity.Input);

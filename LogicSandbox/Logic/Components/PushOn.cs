@@ -2,6 +2,10 @@
   
     public class PushOn : ButtonComponent {
 
+        public PushOn(string id) : this(id, 0, 0) {
+
+        }
+
         public PushOn(string id, float x, float y) : base(id, "Push On", x, y, 34, 34) { }
 
         protected override void OnButtonPressed() {

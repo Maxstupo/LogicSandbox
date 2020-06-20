@@ -6,6 +6,10 @@
     /// A digital component that forwards the input signal to the output pins.
     /// </summary>
     public abstract class BypassComponent : DigitalComponent {
+      
+        public BypassComponent(string id) : this(id, null, 0, 0, 0, 0) {
+
+        }
 
         public BypassComponent(string id, string label, float x, float y, float width, float height) : base(id, label, x, y, width, height) {
             ProcessInterval = -1;

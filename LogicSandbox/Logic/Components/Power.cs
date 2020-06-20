@@ -4,6 +4,10 @@
 
     public sealed class Power : DigitalComponent {
 
+        public Power(string id) : this(id, 0, 0) {
+
+        }
+
         public Power(string id, float x, float y) : base(id, "PWR", x, y, 34, 34) {
             BackgroundColor = Color.FromArgb(255, 204, 204);
 

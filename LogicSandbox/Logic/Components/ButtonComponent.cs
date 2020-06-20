@@ -1,8 +1,10 @@
 ﻿namespace Maxstupo.LogicSandbox.Logic.Components {
-    
+
     using System.Drawing;
     using System.Linq;
     using Maxstupo.LogicSandbox.Shapes;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
     public abstract class ButtonComponent : DigitalComponent {
 
@@ -22,6 +24,10 @@
 
         // The "button" component that the user clicks.
         protected Shape interactiveShape;
+
+        public ButtonComponent(string id) : this(id, null, 0, 0, 0, 0) {
+
+        }
 
         public ButtonComponent(string id, string label, float x, float y, float width, float height) : base(id, label, x, y, width, height) {
             AddPin("in0", Polarity.Input);
@@ -56,6 +62,16 @@
 
         protected virtual void OnButtonReleased() {
 
+        }
+
+        public override void ToJson(JsonTextWriter jtw) {
+            base.ToJson(jtw);
+            jtw.WritePropertyName("state"); jtw.WriteValue(ButtonState);
+        }
+
+        public override void FromJson(JToken token) {
+            base.FromJson(token);
+            ButtonState = token["state"].Value<bool>();
         }
 
         protected override bool Process(float stepAmount) {

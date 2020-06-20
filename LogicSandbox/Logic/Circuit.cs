@@ -3,9 +3,13 @@
     using System;
     using System.Collections.Generic;
     using System.Drawing;
+    using System.IO;
     using System.Linq;
+    using System.Text;
     using Maxstupo.LogicSandbox.Logic.Components;
     using Maxstupo.LogicSandbox.Shapes;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Represents a collection of components that are connected via wires.
@@ -14,7 +18,7 @@
 
         /// <summary>The components of the circuit.</summary>
         public List<DigitalComponent> Components { get; } = new List<DigitalComponent>();
-     
+
 
         // A cache used to look-up components using the id.
         private readonly Dictionary<string, DigitalComponent> lookup = new Dictionary<string, DigitalComponent>();
@@ -71,7 +75,7 @@
         }
 
         /// <summary>
-        /// Adds a wire between to pins. The pins must have different polarities,
+        /// Adds a wire between two pins. The pins must have different polarities,
         /// and the input pin provided can't have any wires connected to it.
         /// If the criteria mentioned isn't met the method wont do anything.
         /// </summary>
@@ -95,6 +99,29 @@
             wires.Add(new Wire(pinA, pinB));
         }
 
+        /// <summary>
+        /// Adds a wire using two fully qualified pin ids (component_id.pin_id).
+        /// The pins must have different polarities,
+        /// and the input pin provided can't have any wires connected to it.
+        /// If the criteria mentioned isn't met the method wont do anything.
+        /// </summary>
+        public void AddWire(string pin1FullId, string pin2FullId) {
+            string[] pin1Tokens = pin1FullId.Split('.');
+            string[] pin2Tokens = pin2FullId.Split('.');
+
+            if (pin1Tokens.Length != 2 || pin2Tokens.Length != 2)
+                return;
+
+            if (lookup.TryGetValue(pin1Tokens[0], out DigitalComponent c1) && lookup.TryGetValue(pin2Tokens[0], out DigitalComponent c2)) {
+                Pin p1 = c1.GetPin(pin1Tokens[1]);
+                Pin p2 = c2.GetPin(pin2Tokens[1]);
+
+                if (p1 == null || p2 == null)
+                    return;
+
+                AddWire(p1, p2);
+            }
+        }
 
         /// <summary>
         /// Clears all wires and components. Circuit will be empty after calling this.
@@ -238,6 +265,100 @@
             });
         }
 
+        /// <summary>
+        /// Returns the JSON representation of this <see cref="Circuit"/>.
+        /// </summary>
+        public string ToJson() {
+            StringBuilder sb = new StringBuilder();
+
+            using (StringWriter sw = new StringWriter(sb)) {
+                using (JsonTextWriter jtw = new JsonTextWriter(sw))
+                    ToJson(jtw);
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Creates a JSON representation of this <see cref="Circuit"/> using the provided JSON writer.
+        /// </summary>
+        public void ToJson(JsonTextWriter jtw) {
+            jtw.Formatting = Formatting.Indented;
+
+            jtw.WriteStartObject();
+            {
+                // Components
+                jtw.WritePropertyName("components");
+                jtw.WriteStartArray();
+                {
+                    foreach (DigitalComponent component in Components) {
+                        jtw.WriteStartObject();
+                        {
+                            jtw.WritePropertyName("id"); jtw.WriteValue(component.Id);
+                            jtw.WritePropertyName("type"); jtw.WriteValue(component.GetType().FullName.ToLower());
+
+                            component.ToJson(jtw);
+                        }
+                        jtw.WriteEndObject();
+                    }
+                }
+                jtw.WriteEndArray();
+
+                // Wires
+                jtw.WritePropertyName("wires");
+                jtw.WriteStartArray();
+                {
+                    foreach (Wire wire in wires) {
+                        jtw.Formatting = Formatting.Indented;
+                        jtw.WriteStartArray();
+                        {
+                            jtw.Formatting = Formatting.None;
+                            jtw.WriteValue(wire.P1.FullId);
+                            jtw.WriteValue(wire.P2.FullId);
+                        }
+                        jtw.WriteEndArray();
+                    }
+                }
+                jtw.Formatting = Formatting.Indented;
+                jtw.WriteEndArray();
+            }
+            jtw.WriteEndObject();
+        }
+
+        /// <summary>
+        /// Parses the provided JSON string, and updates this <see cref="Circuit"/> to represent it.
+        /// </summary>
+        public void FromJson(string json) {
+            JObject obj = JObject.Parse(json);
+
+            Clear();
+            foreach (JToken token in obj["components"]) {
+
+                string id = token["id"].Value<string>();
+                string type = token["type"].Value<string>();
+
+                Type componentType = Type.GetType(type, false, true);
+                if (componentType == null) {
+                    Console.WriteLine("Unknown component type: " + type);
+                    continue;
+                }
+
+                DigitalComponent component = (DigitalComponent) Activator.CreateInstance(componentType, id);
+                component.FromJson(token);
+
+                AddComponent(component);
+            }
+
+            foreach (JToken token in obj["wires"]) {
+
+                string p1FullId = token.First().Value<string>();
+                string p2FullId = token.Last().Value<string>();
+
+                AddWire(p1FullId, p2FullId);
+
+            }
+
+        }
 
     }
 

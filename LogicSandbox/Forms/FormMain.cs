@@ -5,7 +5,9 @@
     using System.Diagnostics;
     using System.Drawing;
     using System.Drawing.Drawing2D;
+    using System.IO;
     using System.Linq;
+    using System.Text;
     using System.Windows.Forms;
     using Maxstupo.LogicSandbox.Logic;
     using Maxstupo.LogicSandbox.Logic.Components;
@@ -26,9 +28,21 @@
         private readonly ImageList componentThumbnailList = new ImageList { ColorDepth = ColorDepth.Depth32Bit };
 
         private Pin selectedPin;
+        private Shape componentOver;
 
         /// <summary>The component that is currently being dragged in or out of the canvas area.</summary>
         private DigitalComponent pendingComponent;
+
+        private string openFilepath = null;
+
+        private bool unsavedChanges = false;
+        private bool UnsavedChanges {
+            get => unsavedChanges;
+            set {
+                unsavedChanges = value;
+                UpdateTitle();
+            }
+        }
 
         public FormMain() {
             InitializeComponent();
@@ -56,6 +70,13 @@
             timer.Start();
         }
 
+        private void UpdateTitle() {
+            if (openFilepath == null) {
+                Text = "Logic Sandbox";
+            } else {
+                Text = $"Logic Sandbox - {openFilepath}{(UnsavedChanges ? "*" : string.Empty)}";
+            }
+        }
 
 
         private void FormMain_Load(object sender, EventArgs e) {
@@ -125,8 +146,6 @@
             selector.Draw(g);
         }
 
-        private Shape componentOver;
-
         private void Canvas_MouseDown(object sender, MouseEventArgs e) {
 
             if (e.Button == MouseButtons.Left) {
@@ -141,7 +160,7 @@
                     bool additiveMode = ModifierKeys.HasFlag(AdditiveKey); // Previous selection not cleared.
 
                     if (!selector.Start(canvas.MouseWorldX, canvas.MouseWorldY, additiveMode, (x, y) => circuit.GetComponentMouseOverOrDescentants())) {
-
+                        UnsavedChanges = true;
                         transformer.Clear();
                         transformer.AddItems(selector.SelectedItems);
                         transformer.StartDrag(canvas.MouseWorldX, canvas.MouseWorldY);
@@ -154,8 +173,10 @@
             } else if (e.Button == MouseButtons.Right) {
 
                 Pin pin = circuit.GetPinOver();
-                if (pin != null)
+                if (pin != null) {
                     circuit.RemoveConnectedWires(pin);
+                    UnsavedChanges = true;
+                }
 
             }
 
@@ -187,8 +208,10 @@
                 if (selectedPin != null) {
 
                     Pin nextSelectedPin = circuit.GetPinOver();
-                    if (nextSelectedPin != null)
+                    if (nextSelectedPin != null) {
                         circuit.AddWire(selectedPin, nextSelectedPin);
+                        UnsavedChanges = true;
+                    }
 
                     selectedPin = null;
                     canvas.Refresh();
@@ -258,18 +281,45 @@
 
             baseCircuit.AddComponent(circuitComponent);
             canvas.Refresh();
+            UnsavedChanges = true;
         }
 
+
         #region Menu Strip
+
+        #region File Menu
+
+        private void newTsmi_Click(object sender, EventArgs e) {
+            NewFile();
+        }
+
+        private void openTsmi_Click(object sender, EventArgs e) {
+            Open();
+        }
+
+        private void saveTsmi_Click(object sender, EventArgs e) {
+            Save();
+        }
+
+        private void saveAsTsmi_Click(object sender, EventArgs e) {
+            SaveAs();
+        }
 
         private void exitTsmi_Click(object sender, EventArgs e) {
             Application.Exit();
         }
 
+        #endregion
+
+        #region Simulation Menu
+
         private void createICToolStripMenuItem_Click(object sender, EventArgs e) {
             CreateIC(selector.SelectedItems.ToList(), circuit);
         }
 
+        #endregion
+
+        #region Edit Menu
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e) {
             foreach (DigitalComponent component in selector.SelectedItems.ToList()) {
@@ -294,6 +344,10 @@
             canvas.Refresh();
         }
 
+        #endregion
+
+        #region View Menu
+
         private void centerTsmi_Click(object sender, EventArgs e) {
             if (transformer.ItemCount > 0) {
                 canvas.Center(transformer.Selection);
@@ -302,9 +356,15 @@
             }
         }
 
+        #endregion
+
+        #region Help Menu
+
         private void wikiTsmi_Click(object sender, EventArgs e) {
             Process.Start(Resources.WikiUrl);
         }
+
+        #endregion
 
         #endregion
 
@@ -321,6 +381,7 @@
 
         private void Canvas_DragDrop(object sender, DragEventArgs e) {
             pendingComponent = null;
+            UnsavedChanges = true;
         }
 
         private void Canvas_DragEnter(object sender, DragEventArgs e) {
@@ -331,12 +392,8 @@
 
             if (e.Data.GetData(typeof(ListViewItem)) is ListViewItem item) {
 
-                Point clientPosition = canvas.PointToClient(e.X, e.Y);
-                float x = canvas.ScreenToWorldX(clientPosition.X);
-                float y = canvas.ScreenToWorldY(clientPosition.Y);
-
                 string time = DateTime.Now.Ticks.ToString();
-                pendingComponent = (DigitalComponent) Activator.CreateInstance((Type) item.Tag, $"comp_{((Type) item.Tag).Name.ToLower()}_{time.Substring(time.Length - 4, 4)}", x, y);
+                pendingComponent = (DigitalComponent) Activator.CreateInstance((Type) item.Tag, $"c_{((Type) item.Tag).Name.ToLower()}_{time.Substring(time.Length - 4, 4)}");
 
                 circuit.AddComponent(pendingComponent);
 
@@ -366,6 +423,78 @@
             canvas.Refresh();
         }
 
+
+        #endregion
+
+
+        #region Loading / Saving
+
+        public void CheckUnsavedChanges() {
+            if (UnsavedChanges) {
+                if (MessageBox.Show(this, "The current circuit has unsaved changes! Do you want to save before continuing?", "Unsaved Changes", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    Save();
+            }
+        }
+
+        public void NewFile() {
+            CheckUnsavedChanges();
+
+            openFilepath = null;
+            UnsavedChanges = false;
+
+            circuit = new Circuit();
+            selector.ItemSource = circuit.Components;
+            canvas.Refresh();
+        }
+
+
+        public void Open() {
+            using (OpenFileDialog dialog = new OpenFileDialog()) {
+                dialog.Title = "Open Circuit...";
+                dialog.CheckFileExists = true;
+                dialog.CheckPathExists = true;
+                dialog.Filter = Resources.FileFilter;
+
+                if (dialog.ShowDialog(this) == DialogResult.OK)
+                    Open(dialog.FileName);
+
+            }
+        }
+
+        public void Open(string filename) {
+            CheckUnsavedChanges();
+
+            string json = File.ReadAllText(filename, new UTF8Encoding(false));
+            circuit.FromJson(json);
+
+            openFilepath = filename;
+            UnsavedChanges = false;
+        }
+
+        public void Save() {
+            if (openFilepath != null) {
+                SaveAs(openFilepath);
+            } else {
+                SaveAs();
+            }
+        }
+
+        public void SaveAs() {
+            using (SaveFileDialog dialog = new SaveFileDialog()) {
+                dialog.Title = "Save Circuit As...";
+                dialog.AddExtension = true;
+                dialog.Filter = Resources.FileFilter;
+
+                if (dialog.ShowDialog(this) == DialogResult.OK)
+                    SaveAs(dialog.FileName);
+            }
+        }
+
+        public void SaveAs(string filepath) {
+            string json = circuit.ToJson();
+            File.WriteAllText(filepath, json, new UTF8Encoding(false));
+            UnsavedChanges = false;
+        }
 
         #endregion
 

@@ -1,11 +1,13 @@
 ﻿namespace Maxstupo.LogicSandbox.Logic.Components {
-
+    using System;
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
     using Maxstupo.LogicSandbox.Shapes;
     using Maxstupo.LogicSandbox.Utility;
     using Maxstupo.LogicSandbox.Utility.Interaction;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Represents a component (logic gate, button, etc) and provides all required logic and 
@@ -49,6 +51,9 @@
 
         public bool IsSelectable { get; protected set; } = true;
 
+        public DigitalComponent(string id) : this(id, null, 0, 0, 0, 0) {
+        }
+
         public DigitalComponent(string id, string label, float x, float y, float width, float height) : base(x, y, width, height) {
             Id = id;
             Label = label;
@@ -60,6 +65,25 @@
             OutlineThickness = 2f;
 
             CornerRadius = 2f;
+        }
+
+        /// <summary>
+        /// Writes the state of this component to the provided JSON writer.
+        /// </summary>
+        public virtual void ToJson(JsonTextWriter jtw) {
+            jtw.WritePropertyName("x"); jtw.WriteValue(X);
+            jtw.WritePropertyName("y"); jtw.WriteValue(Y);
+
+            jtw.WritePropertyName("label"); jtw.WriteValue(Label);
+        }
+
+        /// <summary>
+        /// Reads and sets the state of this component from the provided JToken.
+        /// </summary>
+        public virtual void FromJson(JToken token) {
+            X = token["x"].Value<float>();
+            Y = token["y"].Value<float>();
+            Label = token["label"]?.Value<string>() ?? Label;
         }
 
         /// <summary>
@@ -122,7 +146,7 @@
             bool stateChanged = false;
 
             foreach (Pin pin in GetPins(polarity)) {
-                if (pin.Value != newValue) 
+                if (pin.Value != newValue)
                     stateChanged = true;
 
                 pin.Value = newValue;
@@ -204,6 +228,7 @@
         public IEnumerable<Pin> GetPins(Polarity polarity) {
             return pins.Values.Where(x => x.Polarity == polarity);
         }
+
 
     }
 

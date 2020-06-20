@@ -3,6 +3,10 @@
     using System.Drawing;
 
     public class PortOut : BypassComponent {
+        
+        public PortOut(string id) : this(id, 0, 0) {
+
+        }
 
         public PortOut(string id, float x, float y) : base(id, "OUT1", x, y, 34, 34) {
 
