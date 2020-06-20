@@ -22,13 +22,8 @@
 
         private Circuit circuit = new Circuit();
 
-        private readonly Selector<DigitalComponent> selector;
-        private readonly Transformer<DigitalComponent> transformer = new Transformer<DigitalComponent>();
 
         private readonly ImageList componentThumbnailList = new ImageList { ColorDepth = ColorDepth.Depth32Bit };
-
-        private Pin selectedPin;
-        private Shape componentOver;
 
         /// <summary>The component that is currently being dragged in or out of the canvas area.</summary>
         private DigitalComponent pendingComponent;
@@ -47,18 +42,8 @@
         public FormMain() {
             InitializeComponent();
 
-            selector = new Selector<DigitalComponent>(circuit.Components);
-            selector.OnDragging += (s, e) => canvas.Refresh();
-            selector.OnEndDrag += Selector_OnEndDrag;
-
-            transformer.OnMoving += (s, e) => canvas.Refresh();
-
-
-            canvas.Paint += Canvas_Paint;
-
-            canvas.MouseDown += Canvas_MouseDown;
-            canvas.MouseMove += Canvas_MouseMove;
-            canvas.MouseUp += Canvas_MouseUp;
+            canvas.OnCircuitChanged += (s, e) => UnsavedChanges = true;
+            canvas.Circuit = circuit;
 
             // TEMP: Replace timer with something better.
             Timer timer = new Timer();
@@ -92,139 +77,22 @@
             AddComponentToLibrary(new NotGate("", 0, 0));
             AddComponentToLibrary(new OrGate("", 0, 0));
             AddComponentToLibrary(new PortIn("", 0, 0));
-            AddComponentToLibrary(new PortOut("", 0, 0));
-
-            componentThumbnailList.ImageSize = new Size(44, 44);
+            componentThumbnailList.ImageSize = AddComponentToLibrary(new PortOut("", 0, 0));
 
             lvComponentLibrary.View = View.LargeIcon;
             lvComponentLibrary.LargeImageList = componentThumbnailList;
         }
 
         // TEMP: move to more suitable location.
-        private void AddComponentToLibrary(DigitalComponent dc) {
-            Image thumbnail = GenerateComponentThumbnail(dc);
+        private Size AddComponentToLibrary(DigitalComponent dc) {
+            Image thumbnail = DigitalComponent.GenerateThumbnail(dc);
 
             componentThumbnailList.Images.Add(thumbnail);
 
             ListViewItem item = lvComponentLibrary.Items.Add(dc.Label, componentThumbnailList.Images.Count - 1);
             item.Tag = dc.GetType();
-        }
 
-        // TEMP: move to more suitable location.
-        private Image GenerateComponentThumbnail(DigitalComponent dc) {
-            dc.X += DigitalComponent.PinDiameter / 2f;
-
-            int width = (int) (dc.Width + DigitalComponent.PinDiameter);
-            int height = (int) dc.Height;
-
-            Image thumbnail = new Bitmap(width, height + 1);
-            using (Graphics g = Graphics.FromImage(thumbnail)) {
-                g.SmoothingMode = SmoothingMode.AntiAlias;
-                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-                dc.Draw(g);
-            }
-
-            dc.X -= DigitalComponent.PinDiameter / 2f;
-
-            return thumbnail;
-        }
-
-        private void Canvas_Paint(object sender, PaintEventArgs e) {
-            Graphics g = e.Graphics;
-
-            g.SmoothingMode = SmoothingMode.HighQuality;
-            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-            circuit.Draw(g);
-
-            if (selectedPin != null)
-                g.DrawLine(Pens.Blue, canvas.MouseWorldX, canvas.MouseWorldY, selectedPin.GlobalX, selectedPin.GlobalY);
-
-            selector.Draw(g);
-        }
-
-        private void Canvas_MouseDown(object sender, MouseEventArgs e) {
-
-            if (e.Button == MouseButtons.Left) {
-
-                componentOver = circuit.GetComponentOver();
-                if (componentOver != null)
-                    componentOver.UpdateMouseState(true);
-
-                selectedPin = circuit.GetPinOver();
-                if (selectedPin == null) {
-
-                    bool additiveMode = ModifierKeys.HasFlag(AdditiveKey); // Previous selection not cleared.
-
-                    if (!selector.Start(canvas.MouseWorldX, canvas.MouseWorldY, additiveMode, (x, y) => circuit.GetComponentMouseOverOrDescentants())) {
-                        UnsavedChanges = true;
-                        transformer.Clear();
-                        transformer.AddItems(selector.SelectedItems);
-                        transformer.StartDrag(canvas.MouseWorldX, canvas.MouseWorldY);
-
-                        canvas.Refresh();
-                    }
-
-                }
-
-            } else if (e.Button == MouseButtons.Right) {
-
-                Pin pin = circuit.GetPinOver();
-                if (pin != null) {
-                    circuit.RemoveConnectedWires(pin);
-                    UnsavedChanges = true;
-                }
-
-            }
-
-        }
-
-        private void Canvas_MouseMove(object sender, MouseEventArgs e) {
-            bool needsRefresh = circuit.Update(canvas.MouseWorldX, canvas.MouseWorldY);
-
-            selector.Drag(canvas.MouseWorldX, canvas.MouseWorldY);
-            transformer.Drag(canvas.MouseWorldX, canvas.MouseWorldY);
-
-            if (needsRefresh || selectedPin != null)
-                canvas.Refresh();
-        }
-
-        private void Canvas_MouseUp(object sender, MouseEventArgs e) {
-            if (e.Button == MouseButtons.Left) {
-
-                if (componentOver != null)
-                    componentOver.UpdateMouseState(false);
-
-
-                bool additiveMode = ModifierKeys.HasFlag(AdditiveKey); // Previous selection not cleared.
-                bool inclusiveMode = ModifierKeys.HasFlag(InclusiveKey); // Item must be inside of selection bounds. 
-
-                selector.EndDrag(canvas.MouseWorldX, canvas.MouseWorldY, additiveMode, inclusiveMode);
-                transformer.EndDrag();
-
-                if (selectedPin != null) {
-
-                    Pin nextSelectedPin = circuit.GetPinOver();
-                    if (nextSelectedPin != null) {
-                        circuit.AddWire(selectedPin, nextSelectedPin);
-                        UnsavedChanges = true;
-                    }
-
-                    selectedPin = null;
-                    canvas.Refresh();
-                }
-
-            }
-
-        }
-
-        private void Selector_OnEndDrag(object sender, List<DigitalComponent> selectedItems) {
-            transformer.Clear();
-            transformer.AddItems(selectedItems);
-            canvas.Refresh();
+            return thumbnail.Size;
         }
 
 
@@ -269,7 +137,7 @@
                 }
 
                 baseCircuit.RemoveComponent(component);
-                selector.Deselect(component);
+                canvas.Selector.Deselect(component);
             }
 
             Console.WriteLine($"Created IC with {internalCircuit.Components.Count} components and {internalCircuit.WireCount} wires");
@@ -314,7 +182,7 @@
         #region Simulation Menu
 
         private void createICToolStripMenuItem_Click(object sender, EventArgs e) {
-            CreateIC(selector.SelectedItems.ToList(), circuit);
+            CreateIC(canvas.Selector.SelectedItems.ToList(), circuit);
         }
 
         #endregion
@@ -322,25 +190,25 @@
         #region Edit Menu
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e) {
-            foreach (DigitalComponent component in selector.SelectedItems.ToList()) {
-                selector.Deselect(component);
+            foreach (DigitalComponent component in canvas.Selector.SelectedItems.ToList()) {
+                canvas.Selector.Deselect(component);
                 circuit.RemoveComponent(component);
             }
             canvas.Refresh();
         }
 
         private void selectAllTsmi_Click(object sender, EventArgs e) {
-            selector.SelectAll();
+            canvas.Selector.SelectAll();
             canvas.Refresh();
         }
 
         private void deselectAllTsmi_Click(object sender, EventArgs e) {
-            selector.DeselectAll();
+            canvas.Selector.DeselectAll();
             canvas.Refresh();
         }
 
         private void invertSelectionTsmi_Click(object sender, EventArgs e) {
-            selector.InvertSelection();
+            canvas.Selector.InvertSelection();
             canvas.Refresh();
         }
 
@@ -349,11 +217,7 @@
         #region View Menu
 
         private void centerTsmi_Click(object sender, EventArgs e) {
-            if (transformer.ItemCount > 0) {
-                canvas.Center(transformer.Selection);
-            } else {
-                canvas.Center();
-            }
+            canvas.CenterSelection();
         }
 
         #endregion
@@ -443,7 +307,7 @@
             UnsavedChanges = false;
 
             circuit = new Circuit();
-            selector.ItemSource = circuit.Components;
+            canvas.Selector.ItemSource = circuit.Components;
             canvas.Refresh();
         }
 

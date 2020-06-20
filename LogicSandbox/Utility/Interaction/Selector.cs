@@ -43,7 +43,7 @@
         private float startX;
         private float startY;
 
-        public Selector(List<T> items) {
+        public Selector(List<T> items = null) {
             ItemSource = items ?? new List<T>();
         }
 

@@ -1,7 +1,8 @@
 ﻿namespace Maxstupo.LogicSandbox.Logic.Components {
-    using System;
+ 
     using System.Collections.Generic;
     using System.Drawing;
+    using System.Drawing.Drawing2D;
     using System.Linq;
     using Maxstupo.LogicSandbox.Shapes;
     using Maxstupo.LogicSandbox.Utility;
@@ -209,6 +210,29 @@
             }
         }
 
+        /// <summary>
+        /// Draws the provided <see cref="DigitalComponent"/> into a new <see cref="Image"/> object.
+        /// </summary>
+        /// <returns>A new <see cref="Image"/> object containining the drawn component.</returns>
+        public static Image GenerateThumbnail(DigitalComponent dc) {
+            dc.X += PinDiameter / 2f;
+
+            int width = (int) (dc.Width + PinDiameter);
+            int height = (int) dc.Height;
+
+            Image thumbnail = new Bitmap(width, height + 1);
+            using (Graphics g = Graphics.FromImage(thumbnail)) {
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                dc.Draw(g);
+            }
+
+            dc.X -= PinDiameter / 2f;
+
+            return thumbnail;
+        }
 
         public void OnSelected() {
             OutlineColor = OutlineColorSelected;
@@ -218,6 +242,9 @@
             OutlineColor = OutlineColorUnselected;
         }
 
+        /// <summary>
+        /// Returns the pin with the given id. Uses lookup for fast access.
+        /// </summary>
         public Pin GetPin(string id) {
             return pins.TryGetValue(id, out Pin value) ? value : null;
         }

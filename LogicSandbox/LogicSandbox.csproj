@@ -52,6 +52,9 @@
     <Compile Include="Controls\Canvas.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\CircuitCanvas.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Forms\FormMain.cs">
       <SubType>Form</SubType>
     </Compile>

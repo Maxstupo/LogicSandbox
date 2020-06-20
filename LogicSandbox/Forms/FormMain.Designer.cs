@@ -54,7 +54,7 @@
             this.aboutTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.lvComponentLibrary = new System.Windows.Forms.ListView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.canvas = new Maxstupo.LogicSandbox.Controls.Canvas();
+            this.canvas = new Maxstupo.LogicSandbox.Controls.CircuitCanvas();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -323,15 +323,18 @@
             // 
             // canvas
             // 
+            this.canvas.AdditiveKey = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.None)));
             this.canvas.AllowDrop = true;
             this.canvas.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.canvas.Circuit = null;
             this.canvas.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.canvas.InclusiveKey = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.None)));
             this.canvas.InvertedScrollWheel = false;
             this.canvas.Location = new System.Drawing.Point(0, 0);
             this.canvas.Name = "canvas";
             this.canvas.PanButton = System.Windows.Forms.MouseButtons.Middle;
-            this.canvas.PanPositionX = 18512F;
-            this.canvas.PanPositionY = 11076F;
+            this.canvas.PanPositionX = 18840.5F;
+            this.canvas.PanPositionY = 11289F;
             this.canvas.ScrollWheelMultiplier = 0.03F;
             this.canvas.ScrollWheelZoom = true;
             this.canvas.Size = new System.Drawing.Size(657, 426);
@@ -358,8 +361,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.splitContainer1);
+            this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
             this.MainMenuStrip = this.menuStrip;
             this.Name = "FormMain";
@@ -379,7 +382,7 @@
 
         #endregion
 
-        private Controls.Canvas canvas;
+        private Controls.CircuitCanvas canvas;
         private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripMenuItem fileTsmi;
         private System.Windows.Forms.ToolStripMenuItem newTsmi;
@@ -406,11 +409,11 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ListView lvComponentLibrary;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem circuitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem simulationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createICToolStripMenuItem;
+        private System.Windows.Forms.StatusStrip statusStrip;
     }
 }
 
