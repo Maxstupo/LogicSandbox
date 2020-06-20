@@ -51,6 +51,9 @@
 
         public bool IsSelectable { get; protected set; } = true;
 
+        public DigitalComponent(string id) : this(id, null, 0, 0, 0, 0) {
+        }
+
         public DigitalComponent(string id, string label, float x, float y, float width, float height) : base(x, y, width, height) {
             Id = id;
             Label = label;
@@ -64,12 +67,23 @@
             CornerRadius = 2f;
         }
 
+        /// <summary>
+        /// Writes the state of this component to the provided JSON writer.
+        /// </summary>
         public virtual void ToJson(JsonTextWriter jtw) {
+            jtw.WritePropertyName("x"); jtw.WriteValue(X);
+            jtw.WritePropertyName("y"); jtw.WriteValue(Y);
+
             jtw.WritePropertyName("label"); jtw.WriteValue(Label);
         }
 
+        /// <summary>
+        /// Reads and sets the state of this component from the provided JToken.
+        /// </summary>
         public virtual void FromJson(JToken token) {
-            Label = token["label"]?.Value<string>()??Label;
+            X = token["x"].Value<float>();
+            Y = token["y"].Value<float>();
+            Label = token["label"]?.Value<string>() ?? Label;
         }
 
         /// <summary>

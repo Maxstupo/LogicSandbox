@@ -392,12 +392,8 @@
 
             if (e.Data.GetData(typeof(ListViewItem)) is ListViewItem item) {
 
-                Point clientPosition = canvas.PointToClient(e.X, e.Y);
-                float x = canvas.ScreenToWorldX(clientPosition.X);
-                float y = canvas.ScreenToWorldY(clientPosition.Y);
-
                 string time = DateTime.Now.Ticks.ToString();
-                pendingComponent = (DigitalComponent) Activator.CreateInstance((Type) item.Tag, $"c_{((Type) item.Tag).Name.ToLower()}_{time.Substring(time.Length - 4, 4)}", x, y);
+                pendingComponent = (DigitalComponent) Activator.CreateInstance((Type) item.Tag, $"c_{((Type) item.Tag).Name.ToLower()}_{time.Substring(time.Length - 4, 4)}");
 
                 circuit.AddComponent(pendingComponent);
 

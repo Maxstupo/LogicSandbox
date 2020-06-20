@@ -279,6 +279,9 @@
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Creates a JSON representation of this <see cref="Circuit"/> using the provided JSON writer.
+        /// </summary>
         public void ToJson(JsonTextWriter jtw) {
             jtw.Formatting = Formatting.Indented;
 
@@ -293,8 +296,6 @@
                         {
                             jtw.WritePropertyName("id"); jtw.WriteValue(component.Id);
                             jtw.WritePropertyName("type"); jtw.WriteValue(component.GetType().FullName.ToLower());
-                            jtw.WritePropertyName("x"); jtw.WriteValue(component.X);
-                            jtw.WritePropertyName("y"); jtw.WriteValue(component.Y);
 
                             component.ToJson(jtw);
                         }
@@ -335,8 +336,6 @@
 
                 string id = token["id"].Value<string>();
                 string type = token["type"].Value<string>();
-                float x = token["x"].Value<float>();
-                float y = token["y"].Value<float>();
 
                 Type componentType = Type.GetType(type, false, true);
                 if (componentType == null) {
@@ -344,8 +343,7 @@
                     continue;
                 }
 
-                DigitalComponent component = (DigitalComponent) Activator.CreateInstance(componentType, new object[] { id, x, y });
-
+                DigitalComponent component = (DigitalComponent) Activator.CreateInstance(componentType, id);
                 component.FromJson(token);
 
                 AddComponent(component);

@@ -18,6 +18,10 @@
 
         private readonly Dictionary<Pin, Pin> pinMapping = new Dictionary<Pin, Pin>();
 
+        public CircuitComponent(string id) : this(id, 0, 0) {
+
+        }
+
         public CircuitComponent(string id, float x, float y) : base(id, "IC", x, y, 34, 34) {
             ProcessInterval = -1;
         }
@@ -68,9 +72,8 @@
             Circuit circuit = new Circuit();
 
             string json = token["circuit"].ToString();
-            System.Console.Clear();
-            System.Console.WriteLine(json);
             circuit.FromJson(json);
+
             InternalCircuit = circuit;
         }
 

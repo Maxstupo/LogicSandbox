@@ -25,6 +25,10 @@
         // The "button" component that the user clicks.
         protected Shape interactiveShape;
 
+        public ButtonComponent(string id) : this(id, null, 0, 0, 0, 0) {
+
+        }
+
         public ButtonComponent(string id, string label, float x, float y, float width, float height) : base(id, label, x, y, width, height) {
             AddPin("in0", Polarity.Input);
             AddPin("out0", Polarity.Output);

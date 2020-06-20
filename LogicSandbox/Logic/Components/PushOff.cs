@@ -2,6 +2,10 @@
    
     public class PushOff : ButtonComponent {
 
+        public PushOff(string id) : this(id, 0, 0) {
+
+        }
+
         public PushOff(string id, float x, float y) : base(id, "Push Off", x, y, 34, 34) {
             ButtonState = true;
         }

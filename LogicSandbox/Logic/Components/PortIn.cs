@@ -4,6 +4,10 @@
 
     public class PortIn : BypassComponent {
 
+        public PortIn(string id) : this(id, 0, 0) {
+
+        }
+
         public PortIn(string id, float x, float y) : base(id, "IN1", x, y, 34, 34) {
 
             AddPin("in0", Polarity.Input);

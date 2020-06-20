@@ -5,6 +5,10 @@
 
     public sealed class OrGate : DigitalComponent {
 
+        public OrGate(string id) : this(id, 0, 0) {
+
+        }
+
         public OrGate(string id, float x, float y) : base(id, "OR", x, y, 34, 34) {
 
             AddPin("in0", Polarity.Input);
