@@ -1,11 +1,13 @@
 ﻿namespace Maxstupo.LogicSandbox.Logic.Components {
-
+    using System;
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
     using Maxstupo.LogicSandbox.Shapes;
     using Maxstupo.LogicSandbox.Utility;
     using Maxstupo.LogicSandbox.Utility.Interaction;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Represents a component (logic gate, button, etc) and provides all required logic and 
@@ -60,6 +62,14 @@
             OutlineThickness = 2f;
 
             CornerRadius = 2f;
+        }
+
+        public virtual void ToJson(JsonTextWriter jtw) {
+            jtw.WritePropertyName("label"); jtw.WriteValue(Label);
+        }
+
+        public virtual void FromJson(JToken token) {
+            Label = token["label"]?.Value<string>()??Label;
         }
 
         /// <summary>
@@ -122,7 +132,7 @@
             bool stateChanged = false;
 
             foreach (Pin pin in GetPins(polarity)) {
-                if (pin.Value != newValue) 
+                if (pin.Value != newValue)
                     stateChanged = true;
 
                 pin.Value = newValue;
@@ -204,6 +214,7 @@
         public IEnumerable<Pin> GetPins(Polarity polarity) {
             return pins.Values.Where(x => x.Polarity == polarity);
         }
+
 
     }
 

@@ -1,8 +1,10 @@
 ﻿namespace Maxstupo.LogicSandbox.Logic.Components {
-    
+
     using System.Drawing;
     using System.Linq;
     using Maxstupo.LogicSandbox.Shapes;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
     public abstract class ButtonComponent : DigitalComponent {
 
@@ -56,6 +58,16 @@
 
         protected virtual void OnButtonReleased() {
 
+        }
+
+        public override void ToJson(JsonTextWriter jtw) {
+            base.ToJson(jtw);
+            jtw.WritePropertyName("state"); jtw.WriteValue(ButtonState);
+        }
+
+        public override void FromJson(JToken token) {
+            base.FromJson(token);
+            ButtonState = token["state"].Value<bool>();
         }
 
         protected override bool Process(float stepAmount) {

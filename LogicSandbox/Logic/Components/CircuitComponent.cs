@@ -1,7 +1,9 @@
 ﻿namespace Maxstupo.LogicSandbox.Logic.Components {
-    
+
     using System.Collections.Generic;
     using System.Drawing;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
     public class CircuitComponent : DigitalComponent {
 
@@ -38,17 +40,38 @@
 
                     pinMapping.Add(icInputPin, internalInputPin);
 
+                    pinIndex++;
+
                 } else if (component is PortOut) {
                     Pin icOutputPin = AddPin($"out{pinIndex}", Polarity.Output);
 
                     Pin internalOutputPin = component.GetPin("out0");
 
                     pinMapping.Add(icOutputPin, internalOutputPin);
+
+                    pinIndex++;
+
                 }
 
-                pinIndex++;
             }
 
+        }
+
+        public override void ToJson(JsonTextWriter jtw) {
+            base.ToJson(jtw);
+            jtw.WritePropertyName("circuit"); InternalCircuit.ToJson(jtw);
+        }
+
+        public override void FromJson(JToken token) {
+            base.FromJson(token);
+
+            Circuit circuit = new Circuit();
+
+            string json = token["circuit"].ToString();
+            System.Console.Clear();
+            System.Console.WriteLine(json);
+            circuit.FromJson(json);
+            InternalCircuit = circuit;
         }
 
         protected override void DrawSymbol(Graphics g) {

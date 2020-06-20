@@ -264,7 +264,7 @@
                 return (s1 == p1Id || s1 == p2Id) && (s2 == p1Id || s2 == p2Id);
             });
         }
-        
+
         /// <summary>
         /// Returns the JSON representation of this <see cref="Circuit"/>.
         /// </summary>
@@ -272,51 +272,56 @@
             StringBuilder sb = new StringBuilder();
 
             using (StringWriter sw = new StringWriter(sb)) {
-                using (JsonTextWriter jtw = new JsonTextWriter(sw)) {
-                    jtw.Formatting = Formatting.Indented;
-
-                    jtw.WriteStartObject();
-                    {
-                        // Components
-                        jtw.WritePropertyName("components");
-                        jtw.WriteStartArray();
-                        {
-                            foreach (DigitalComponent component in Components) {
-                                jtw.WriteStartObject();
-                                {
-                                    jtw.WritePropertyName("id"); jtw.WriteValue(component.Id);
-                                    jtw.WritePropertyName("type"); jtw.WriteValue(component.GetType().FullName.ToLower());
-                                    jtw.WritePropertyName("x"); jtw.WriteValue(component.X);
-                                    jtw.WritePropertyName("y"); jtw.WriteValue(component.Y);
-                                }
-                                jtw.WriteEndObject();
-                            }
-                        }
-                        jtw.WriteEndArray();
-
-                        // Wires
-                        jtw.WritePropertyName("wires");
-                        jtw.WriteStartArray();
-                        {
-                            foreach (Wire wire in wires) {
-                                jtw.Formatting = Formatting.Indented;
-                                jtw.WriteStartArray();
-                                {
-                                    jtw.Formatting = Formatting.None;
-                                    jtw.WriteValue(wire.P1.FullId);
-                                    jtw.WriteValue(wire.P2.FullId);
-                                }
-                                jtw.WriteEndArray();
-                            }
-                        }
-                        jtw.Formatting = Formatting.Indented;
-                        jtw.WriteEndArray();
-                    }
-                    jtw.WriteEndObject();
-                }
+                using (JsonTextWriter jtw = new JsonTextWriter(sw))
+                    ToJson(jtw);
             }
 
             return sb.ToString();
+        }
+
+        public void ToJson(JsonTextWriter jtw) {
+            jtw.Formatting = Formatting.Indented;
+
+            jtw.WriteStartObject();
+            {
+                // Components
+                jtw.WritePropertyName("components");
+                jtw.WriteStartArray();
+                {
+                    foreach (DigitalComponent component in Components) {
+                        jtw.WriteStartObject();
+                        {
+                            jtw.WritePropertyName("id"); jtw.WriteValue(component.Id);
+                            jtw.WritePropertyName("type"); jtw.WriteValue(component.GetType().FullName.ToLower());
+                            jtw.WritePropertyName("x"); jtw.WriteValue(component.X);
+                            jtw.WritePropertyName("y"); jtw.WriteValue(component.Y);
+
+                            component.ToJson(jtw);
+                        }
+                        jtw.WriteEndObject();
+                    }
+                }
+                jtw.WriteEndArray();
+
+                // Wires
+                jtw.WritePropertyName("wires");
+                jtw.WriteStartArray();
+                {
+                    foreach (Wire wire in wires) {
+                        jtw.Formatting = Formatting.Indented;
+                        jtw.WriteStartArray();
+                        {
+                            jtw.Formatting = Formatting.None;
+                            jtw.WriteValue(wire.P1.FullId);
+                            jtw.WriteValue(wire.P2.FullId);
+                        }
+                        jtw.WriteEndArray();
+                    }
+                }
+                jtw.Formatting = Formatting.Indented;
+                jtw.WriteEndArray();
+            }
+            jtw.WriteEndObject();
         }
 
         /// <summary>
@@ -340,6 +345,9 @@
                 }
 
                 DigitalComponent component = (DigitalComponent) Activator.CreateInstance(componentType, new object[] { id, x, y });
+
+                component.FromJson(token);
+
                 AddComponent(component);
             }
 
@@ -353,7 +361,7 @@
             }
 
         }
-   
+
     }
 
 }
