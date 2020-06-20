@@ -77,44 +77,24 @@
             AddComponentToLibrary(new NotGate("", 0, 0));
             AddComponentToLibrary(new OrGate("", 0, 0));
             AddComponentToLibrary(new PortIn("", 0, 0));
-            AddComponentToLibrary(new PortOut("", 0, 0));
-
-            componentThumbnailList.ImageSize = new Size(44, 44);
+            componentThumbnailList.ImageSize = AddComponentToLibrary(new PortOut("", 0, 0));
 
             lvComponentLibrary.View = View.LargeIcon;
             lvComponentLibrary.LargeImageList = componentThumbnailList;
         }
 
         // TEMP: move to more suitable location.
-        private void AddComponentToLibrary(DigitalComponent dc) {
-            Image thumbnail = GenerateComponentThumbnail(dc);
+        private Size AddComponentToLibrary(DigitalComponent dc) {
+            Image thumbnail = DigitalComponent.GenerateThumbnail(dc);
 
             componentThumbnailList.Images.Add(thumbnail);
 
             ListViewItem item = lvComponentLibrary.Items.Add(dc.Label, componentThumbnailList.Images.Count - 1);
             item.Tag = dc.GetType();
+
+            return thumbnail.Size;
         }
 
-        // TEMP: move to more suitable location.
-        private Image GenerateComponentThumbnail(DigitalComponent dc) {
-            dc.X += DigitalComponent.PinDiameter / 2f;
-
-            int width = (int) (dc.Width + DigitalComponent.PinDiameter);
-            int height = (int) dc.Height;
-
-            Image thumbnail = new Bitmap(width, height + 1);
-            using (Graphics g = Graphics.FromImage(thumbnail)) {
-                g.SmoothingMode = SmoothingMode.AntiAlias;
-                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-                dc.Draw(g);
-            }
-
-            dc.X -= DigitalComponent.PinDiameter / 2f;
-
-            return thumbnail;
-        }
 
         /// <summary>
         /// Creates an IC from the provided components, the circuit provided must be the source of the components in the list.
