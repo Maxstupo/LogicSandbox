@@ -44,6 +44,9 @@
             this.invertSelectionTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.viewTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.centerTsmi = new System.Windows.Forms.ToolStripMenuItem();
+            this.circuitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.simulationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createICToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.helpTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.wikiTsmi = new System.Windows.Forms.ToolStripMenuItem();
@@ -51,11 +54,8 @@
             this.aboutTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.lvComponentLibrary = new System.Windows.Forms.ListView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.statusStrip = new System.Windows.Forms.StatusStrip();
-            this.circuitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.simulationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.createICToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.canvas = new Maxstupo.LogicSandbox.Controls.Canvas();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -102,6 +102,7 @@
             this.newTsmi.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.newTsmi.Size = new System.Drawing.Size(186, 22);
             this.newTsmi.Text = "&New";
+            this.newTsmi.Click += new System.EventHandler(this.newTsmi_Click);
             // 
             // openTsmi
             // 
@@ -111,6 +112,7 @@
             this.openTsmi.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.openTsmi.Size = new System.Drawing.Size(186, 22);
             this.openTsmi.Text = "&Open";
+            this.openTsmi.Click += new System.EventHandler(this.openTsmi_Click);
             // 
             // toolStripSeparator
             // 
@@ -125,6 +127,7 @@
             this.saveTsmi.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveTsmi.Size = new System.Drawing.Size(186, 22);
             this.saveTsmi.Text = "&Save";
+            this.saveTsmi.Click += new System.EventHandler(this.saveTsmi_Click);
             // 
             // saveAsTsmi
             // 
@@ -133,6 +136,7 @@
             | System.Windows.Forms.Keys.S)));
             this.saveAsTsmi.Size = new System.Drawing.Size(186, 22);
             this.saveAsTsmi.Text = "Save &As";
+            this.saveAsTsmi.Click += new System.EventHandler(this.saveAsTsmi_Click);
             // 
             // toolStripSeparator2
             // 
@@ -230,6 +234,29 @@
             this.centerTsmi.Text = "&Center";
             this.centerTsmi.Click += new System.EventHandler(this.centerTsmi_Click);
             // 
+            // circuitToolStripMenuItem
+            // 
+            this.circuitToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.simulationToolStripMenuItem,
+            this.createICToolStripMenuItem});
+            this.circuitToolStripMenuItem.Name = "circuitToolStripMenuItem";
+            this.circuitToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
+            this.circuitToolStripMenuItem.Text = "Circuit";
+            // 
+            // simulationToolStripMenuItem
+            // 
+            this.simulationToolStripMenuItem.Enabled = false;
+            this.simulationToolStripMenuItem.Name = "simulationToolStripMenuItem";
+            this.simulationToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
+            this.simulationToolStripMenuItem.Text = "Simulation";
+            // 
+            // createICToolStripMenuItem
+            // 
+            this.createICToolStripMenuItem.Name = "createICToolStripMenuItem";
+            this.createICToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
+            this.createICToolStripMenuItem.Text = "Create IC...";
+            this.createICToolStripMenuItem.Click += new System.EventHandler(this.createICToolStripMenuItem_Click);
+            // 
             // optionsTsmi
             // 
             this.optionsTsmi.Name = "optionsTsmi";
@@ -294,37 +321,6 @@
             this.splitContainer1.SplitterDistance = 139;
             this.splitContainer1.TabIndex = 3;
             // 
-            // statusStrip
-            // 
-            this.statusStrip.Location = new System.Drawing.Point(0, 428);
-            this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(800, 22);
-            this.statusStrip.TabIndex = 4;
-            this.statusStrip.Text = "statusStrip1";
-            // 
-            // circuitToolStripMenuItem
-            // 
-            this.circuitToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.simulationToolStripMenuItem,
-            this.createICToolStripMenuItem});
-            this.circuitToolStripMenuItem.Name = "circuitToolStripMenuItem";
-            this.circuitToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
-            this.circuitToolStripMenuItem.Text = "Circuit";
-            // 
-            // simulationToolStripMenuItem
-            // 
-            this.simulationToolStripMenuItem.Enabled = false;
-            this.simulationToolStripMenuItem.Name = "simulationToolStripMenuItem";
-            this.simulationToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.simulationToolStripMenuItem.Text = "Simulation";
-            // 
-            // createICToolStripMenuItem
-            // 
-            this.createICToolStripMenuItem.Name = "createICToolStripMenuItem";
-            this.createICToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.createICToolStripMenuItem.Text = "Create IC...";
-            this.createICToolStripMenuItem.Click += new System.EventHandler(this.createICToolStripMenuItem_Click);
-            // 
             // canvas
             // 
             this.canvas.AllowDrop = true;
@@ -334,8 +330,8 @@
             this.canvas.Location = new System.Drawing.Point(0, 0);
             this.canvas.Name = "canvas";
             this.canvas.PanButton = System.Windows.Forms.MouseButtons.Middle;
-            this.canvas.PanPositionX = 18183.5F;
-            this.canvas.PanPositionY = 10863F;
+            this.canvas.PanPositionX = 18512F;
+            this.canvas.PanPositionY = 11076F;
             this.canvas.ScrollWheelMultiplier = 0.03F;
             this.canvas.ScrollWheelZoom = true;
             this.canvas.Size = new System.Drawing.Size(657, 426);
@@ -348,6 +344,14 @@
             this.canvas.DragEnter += new System.Windows.Forms.DragEventHandler(this.Canvas_DragEnter);
             this.canvas.DragOver += new System.Windows.Forms.DragEventHandler(this.Canvas_DragOver);
             this.canvas.DragLeave += new System.EventHandler(this.Canvas_DragLeave);
+            // 
+            // statusStrip
+            // 
+            this.statusStrip.Location = new System.Drawing.Point(0, 428);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Size = new System.Drawing.Size(800, 22);
+            this.statusStrip.TabIndex = 4;
+            this.statusStrip.Text = "statusStrip1";
             // 
             // FormMain
             // 
