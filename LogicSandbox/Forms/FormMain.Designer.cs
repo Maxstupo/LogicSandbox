@@ -54,7 +54,7 @@
             this.aboutTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.lvComponentLibrary = new System.Windows.Forms.ListView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.canvas = new Maxstupo.LogicSandbox.Controls.Canvas();
+            this.canvas = new Maxstupo.LogicSandbox.Controls.CircuitCanvas();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -379,7 +379,7 @@
 
         #endregion
 
-        private Controls.Canvas canvas;
+        private Controls.CircuitCanvas canvas;
         private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripMenuItem fileTsmi;
         private System.Windows.Forms.ToolStripMenuItem newTsmi;
