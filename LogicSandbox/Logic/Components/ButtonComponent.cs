@@ -74,7 +74,7 @@
             ButtonState = token["state"].Value<bool>();
         }
 
-        protected override bool Process(float stepAmount) {
+        protected override bool Process(float deltaTime) {
             bool isPowered = GetPins(Polarity.Input).Any(x => x.Value);
             bool value = ButtonState && isPowered;
 

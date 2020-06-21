@@ -19,7 +19,7 @@
 
         }
 
-        protected override bool Process(float stepAmount) {
+        protected override bool Process(float deltaTime) {
             return false;
         }
 

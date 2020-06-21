@@ -15,7 +15,7 @@
 
         }
 
-        protected override bool Process(float stepAmount) {
+        protected override bool Process(float deltaTime) {
             Pin pinIn = GetPin("in0");
 
             return SetPinValues(Polarity.Output, !pinIn.Value);
