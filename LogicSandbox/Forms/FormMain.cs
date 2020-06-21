@@ -17,11 +17,8 @@
 
     public partial class FormMain : Form {
 
-        private Keys AdditiveKey { get; set; } = Keys.Control;
-        private Keys InclusiveKey { get; set; } = Keys.Shift;
-
         private Circuit circuit = new Circuit();
-
+        private readonly CircuitSimulator simulator = new CircuitSimulator();
 
         private readonly ImageList componentThumbnailList = new ImageList { ColorDepth = ColorDepth.Depth32Bit };
 
@@ -45,14 +42,10 @@
             canvas.OnCircuitChanged += (s, e) => UnsavedChanges = true;
             canvas.Circuit = circuit;
 
-            // TEMP: Replace timer with something better.
-            Timer timer = new Timer();
-            timer.Tick += (s, e) => {
-                if (circuit.Step(1))
-                    canvas.Refresh();
-            };
-            timer.Interval = 10;
-            timer.Start();
+            simulator.Circuit = circuit;
+            simulator.OnStateChange += (s, e) => Invoke((MethodInvoker) delegate {
+                canvas.Refresh();
+            });
         }
 
         private void UpdateTitle() {
@@ -81,6 +74,8 @@
 
             lvComponentLibrary.View = View.LargeIcon;
             lvComponentLibrary.LargeImageList = componentThumbnailList;
+
+            simulator.Start();
         }
 
         // TEMP: move to more suitable location.
@@ -179,10 +174,26 @@
 
         #endregion
 
-        #region Simulation Menu
+        #region Circuit Menu
 
         private void createICToolStripMenuItem_Click(object sender, EventArgs e) {
             CreateIC(canvas.Selector.SelectedItems.ToList(), circuit);
+        }
+
+        #endregion
+
+        #region Simulation Menu
+
+        private void toggleSimulationTsmi_Click(object sender, EventArgs e) {
+            simulator.Toggle();
+
+            stepSimulationTsmi.Enabled = !simulator.IsRunning;
+
+            toggleSimulationTsmi.Text = simulator.IsRunning ? "&Pause" : "&Play";
+        }
+
+        private void stepSimulationTsmi_Click(object sender, EventArgs e) {
+            simulator.SingleStep();
         }
 
         #endregion

@@ -168,16 +168,16 @@
         /// <summary>
         /// Simulates the circuit by stepping in time.
         /// </summary>
-        /// <param name="stepAmount">The amount of time to step by, in milliseconds.</param>
+        /// <param name="deltaTime">Delta between steps, in seconds.</param>
         /// <returns>True if a state was changed, false otherwise.</returns>
-        public bool Step(float stepRate) {
+        public bool Step(float deltaTime) {
             bool needsRefresh = false;
 
             foreach (Wire wire in wires)
-                needsRefresh |= wire.Step(stepRate);
+                needsRefresh |= wire.Step(deltaTime);
 
             foreach (DigitalComponent comp in Components)
-                needsRefresh |= comp.Step(stepRate);
+                needsRefresh |= comp.Step(deltaTime);
 
             return needsRefresh;
         }

@@ -45,8 +45,11 @@
             this.viewTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.centerTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.circuitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.simulationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createICToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.simulationToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toggleSimulationTsmi = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.stepSimulationTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.helpTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.wikiTsmi = new System.Windows.Forms.ToolStripMenuItem();
@@ -70,6 +73,7 @@
             this.editTsmi,
             this.viewTsmi,
             this.circuitToolStripMenuItem,
+            this.simulationToolStripMenuItem1,
             this.optionsTsmi,
             this.helpTsmi});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
@@ -237,18 +241,10 @@
             // circuitToolStripMenuItem
             // 
             this.circuitToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.simulationToolStripMenuItem,
             this.createICToolStripMenuItem});
             this.circuitToolStripMenuItem.Name = "circuitToolStripMenuItem";
             this.circuitToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
             this.circuitToolStripMenuItem.Text = "Circuit";
-            // 
-            // simulationToolStripMenuItem
-            // 
-            this.simulationToolStripMenuItem.Enabled = false;
-            this.simulationToolStripMenuItem.Name = "simulationToolStripMenuItem";
-            this.simulationToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
-            this.simulationToolStripMenuItem.Text = "Simulation";
             // 
             // createICToolStripMenuItem
             // 
@@ -256,6 +252,38 @@
             this.createICToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.createICToolStripMenuItem.Text = "Create IC...";
             this.createICToolStripMenuItem.Click += new System.EventHandler(this.createICToolStripMenuItem_Click);
+            // 
+            // simulationToolStripMenuItem1
+            // 
+            this.simulationToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toggleSimulationTsmi,
+            this.toolStripSeparator3,
+            this.stepSimulationTsmi});
+            this.simulationToolStripMenuItem1.Name = "simulationToolStripMenuItem1";
+            this.simulationToolStripMenuItem1.Size = new System.Drawing.Size(76, 20);
+            this.simulationToolStripMenuItem1.Text = "&Simulation";
+            // 
+            // toggleSimulationTsmi
+            // 
+            this.toggleSimulationTsmi.Name = "toggleSimulationTsmi";
+            this.toggleSimulationTsmi.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Space)));
+            this.toggleSimulationTsmi.Size = new System.Drawing.Size(180, 22);
+            this.toggleSimulationTsmi.Text = "&Pause";
+            this.toggleSimulationTsmi.Click += new System.EventHandler(this.toggleSimulationTsmi_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
+            // 
+            // stepSimulationTsmi
+            // 
+            this.stepSimulationTsmi.Enabled = false;
+            this.stepSimulationTsmi.Name = "stepSimulationTsmi";
+            this.stepSimulationTsmi.ShortcutKeys = System.Windows.Forms.Keys.F6;
+            this.stepSimulationTsmi.Size = new System.Drawing.Size(180, 22);
+            this.stepSimulationTsmi.Text = "&Step";
+            this.stepSimulationTsmi.Click += new System.EventHandler(this.stepSimulationTsmi_Click);
             // 
             // optionsTsmi
             // 
@@ -299,7 +327,7 @@
             this.lvComponentLibrary.HideSelection = false;
             this.lvComponentLibrary.Location = new System.Drawing.Point(0, 0);
             this.lvComponentLibrary.Name = "lvComponentLibrary";
-            this.lvComponentLibrary.Size = new System.Drawing.Size(139, 426);
+            this.lvComponentLibrary.Size = new System.Drawing.Size(139, 404);
             this.lvComponentLibrary.TabIndex = 2;
             this.lvComponentLibrary.UseCompatibleStateImageBehavior = false;
             this.lvComponentLibrary.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.LvComponentLibrary_ItemDrag);
@@ -317,7 +345,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.canvas);
-            this.splitContainer1.Size = new System.Drawing.Size(800, 426);
+            this.splitContainer1.Size = new System.Drawing.Size(800, 404);
             this.splitContainer1.SplitterDistance = 139;
             this.splitContainer1.TabIndex = 3;
             // 
@@ -333,11 +361,11 @@
             this.canvas.Location = new System.Drawing.Point(0, 0);
             this.canvas.Name = "canvas";
             this.canvas.PanButton = System.Windows.Forms.MouseButtons.Middle;
-            this.canvas.PanPositionX = 18840.5F;
-            this.canvas.PanPositionY = 11289F;
+            this.canvas.PanPositionX = 20154.5F;
+            this.canvas.PanPositionY = 12097F;
             this.canvas.ScrollWheelMultiplier = 0.03F;
             this.canvas.ScrollWheelZoom = true;
-            this.canvas.Size = new System.Drawing.Size(657, 426);
+            this.canvas.Size = new System.Drawing.Size(657, 404);
             this.canvas.TabIndex = 0;
             this.canvas.Zoom = 1F;
             this.canvas.ZoomMaximum = 5F;
@@ -411,9 +439,12 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem circuitToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem simulationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createICToolStripMenuItem;
         private System.Windows.Forms.StatusStrip statusStrip;
+        private System.Windows.Forms.ToolStripMenuItem simulationToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem toggleSimulationTsmi;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem stepSimulationTsmi;
     }
 }
 

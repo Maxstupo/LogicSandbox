@@ -62,6 +62,7 @@
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
     <Compile Include="Logic\Circuit.cs" />
+    <Compile Include="Logic\CircuitSimulator.cs" />
     <Compile Include="Logic\Components\ButtonComponent.cs" />
     <Compile Include="Logic\Components\BypassComponent.cs" />
     <Compile Include="Logic\Components\CircuitComponent.cs" />

@@ -43,7 +43,7 @@
         /// <summary>
         /// The interval in milliseconds between component updates. See <see cref="Process"/>
         /// </summary>
-        public float ProcessInterval { get; protected set; } = 5;
+        public float ProcessInterval { get; protected set; } = 0.25f;
 
         // A cache of pins used for quick look-up by their id.
         private readonly Dictionary<string, Pin> pins = new Dictionary<string, Pin>();
@@ -166,14 +166,14 @@
         /// <summary>
         /// Simulates the component by stepping in time.
         /// </summary>
-        /// <param name="stepAmount">The amount of time to step by, in milliseconds.</param>
+        /// <param name="deltaTime">Delta between steps, in seconds.</param>
         /// <returns>True if the state was changed, false otherwise.</returns>
-        public virtual bool Step(float stepAmount) {
-            Ticks += stepAmount;
+        public virtual bool Step(float deltaTime) {
+            Ticks += deltaTime; 
 
             if (Ticks > ProcessInterval) {
                 Ticks = 0;
-                return Process(stepAmount);
+                return Process(deltaTime);
             }
 
             return false;
