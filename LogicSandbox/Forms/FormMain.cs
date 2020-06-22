@@ -5,6 +5,7 @@
     using System.Diagnostics;
     using System.Drawing;
     using System.Drawing.Drawing2D;
+    using System.Drawing.Imaging;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -39,13 +40,23 @@
         public FormMain() {
             InitializeComponent();
 
+            canvas.OnZoom += (s, e) => UpdateStatusBar();
+            canvas.MouseMove += (s, e) => UpdateStatusBar();
+            canvas.Selector.OnEndDrag += (s, e) => UpdateStatusBar();
+
             canvas.OnCircuitChanged += (s, e) => UnsavedChanges = true;
             canvas.Circuit = circuit;
 
             simulator.Circuit = circuit;
-            simulator.OnStateChange += (s, e) => Invoke((MethodInvoker) delegate {
-                canvas.Refresh();
-            });
+            simulator.OnUpsChanged += (s, e) => Invoke((MethodInvoker) delegate { UpdateStatusBar(); });
+            simulator.OnStateChange += (s, e) => Invoke((MethodInvoker) delegate { canvas.Refresh(); });
+        }
+
+        private void UpdateStatusBar() {
+            tsslPositions.Text = $"{canvas.MouseWorldX:00.00}, {canvas.MouseWorldY:00.00} [{canvas.PanPositionX:00.00}, {canvas.PanPositionY:00.00}]";
+            tsslZoom.Text = $"{canvas.Zoom * 100.0:0.#}%";
+            tsslSeleciton.Text = $"{circuit.Components.Count} components, {canvas.Selector.SelectedItems.Count} selected";
+            tsslSimulationState.Text = $"{(simulator.IsRunning ? simulator.ActualUps : 0)} UPS @ {simulator.Speed}x {(simulator.IsRunning ? string.Empty : "(Paused)")}";
         }
 
         private void UpdateTitle() {
@@ -147,6 +158,20 @@
             UnsavedChanges = true;
         }
 
+        private Image GetCircuitImage() {
+            Image image = new Bitmap(canvas.Width, canvas.Height);
+
+            using (Graphics g = Graphics.FromImage(image)) {
+                g.SmoothingMode = SmoothingMode.HighQuality;
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                canvas.ApplyTransforms(g);
+                circuit.Draw(g);
+            }
+
+            return image;
+        }
 
         #region Menu Strip
 
@@ -166,6 +191,19 @@
 
         private void saveAsTsmi_Click(object sender, EventArgs e) {
             SaveAs();
+        }
+
+        private void exportAsImageTsmi_Click(object sender, EventArgs e) {
+            using (SaveFileDialog dialog = new SaveFileDialog()) {
+                dialog.Filter = "PNG File (*.png)|*.png";
+                dialog.CheckPathExists = true;
+
+                if (dialog.ShowDialog(this) == DialogResult.OK) {
+
+                    using (Image image = GetCircuitImage())
+                        image.Save(dialog.FileName, ImageFormat.Png);
+                }
+            }
         }
 
         private void exitTsmi_Click(object sender, EventArgs e) {
@@ -205,6 +243,7 @@
                 canvas.Selector.Deselect(component);
                 circuit.RemoveComponent(component);
             }
+            UpdateStatusBar();
             canvas.Refresh();
         }
 
@@ -232,6 +271,14 @@
         }
 
         #endregion
+
+        private void optionsTsmi_Click(object sender, EventArgs e) {
+            using (FormOptions options = new FormOptions()) {
+                if (options.ShowDialog(this) == DialogResult.OK) {
+
+                }
+            }
+        }
 
         #region Help Menu
 
@@ -271,7 +318,7 @@
                 pendingComponent = (DigitalComponent) Activator.CreateInstance((Type) item.Tag, $"c_{((Type) item.Tag).Name.ToLower()}_{time.Substring(time.Length - 4, 4)}");
 
                 circuit.AddComponent(pendingComponent);
-
+                UpdateStatusBar();
                 canvas.Refresh();
             }
 
@@ -293,6 +340,7 @@
                 return;
 
             circuit.RemoveComponent(pendingComponent);
+            UpdateStatusBar();
             pendingComponent = null;
 
             canvas.Refresh();
@@ -371,7 +419,9 @@
             UnsavedChanges = false;
         }
 
+
         #endregion
+
 
     }
 

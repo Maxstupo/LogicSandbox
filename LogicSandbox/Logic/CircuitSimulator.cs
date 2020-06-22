@@ -19,12 +19,13 @@
         public float Speed { get; set; } = 1f;
 
         /// <summary>The number of simulation updates per second, the simulator should attempt to achieve.</summary>
-        public int TargetUps { get; set; } = 30;
+        public int TargetUps { get; set; } = 40;
 
         /// <summary>Returns the actual number of updates per second.</summary>
         public int ActualUps { get; private set; }
 
         public event EventHandler OnStateChange;
+        public event EventHandler OnUpsChanged;
 
         private long OptimalTime => 1000 / TargetUps;
 
@@ -56,6 +57,7 @@
                 ActualUps = ups;
                 ups = 0;
                 lastUpsTime = 0;
+                OnUpsChanged?.Invoke(this, EventArgs.Empty);
             }
 
             SingleStep(delta);
@@ -70,11 +72,13 @@
             stopwatch.Reset();
             stopwatch.Start();
             timer.Start();
+            OnUpsChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void Stop() {
             stopwatch.Stop();
             timer.Stop();
+            OnUpsChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void Toggle() {
