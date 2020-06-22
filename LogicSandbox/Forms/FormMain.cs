@@ -225,13 +225,26 @@
         private void toggleSimulationTsmi_Click(object sender, EventArgs e) {
             simulator.Toggle();
 
-            stepSimulationTsmi.Enabled = !simulator.IsRunning;
+            stepSimulationTsmi.Enabled  = !simulator.IsRunning;
+            speedTsmi.Enabled = simulator.IsRunning;
 
             toggleSimulationTsmi.Text = simulator.IsRunning ? "&Pause" : "&Play";
         }
 
         private void stepSimulationTsmi_Click(object sender, EventArgs e) {
             simulator.SingleStep();
+        }
+
+        private void speedTsmi_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e) {
+            float speed = Convert.ToSingle(e.ClickedItem.Tag);
+            simulator.Speed = speed;
+
+            ToolStripDropDownItem tsi = (ToolStripDropDownItem) sender;
+            foreach (ToolStripMenuItem item in tsi.DropDownItems.Cast<ToolStripMenuItem>())
+                item.Checked = false;
+
+
+            (e.ClickedItem as ToolStripMenuItem).Checked = true;
         }
 
         #endregion
@@ -420,8 +433,8 @@
         }
 
 
-        #endregion
 
+        #endregion
 
     }
 
