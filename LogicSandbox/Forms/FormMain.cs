@@ -5,6 +5,7 @@
     using System.Diagnostics;
     using System.Drawing;
     using System.Drawing.Drawing2D;
+    using System.Drawing.Imaging;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -17,11 +18,8 @@
 
     public partial class FormMain : Form {
 
-        private Keys AdditiveKey { get; set; } = Keys.Control;
-        private Keys InclusiveKey { get; set; } = Keys.Shift;
-
         private Circuit circuit = new Circuit();
-
+        private readonly CircuitSimulator simulator = new CircuitSimulator();
 
         private readonly ImageList componentThumbnailList = new ImageList { ColorDepth = ColorDepth.Depth32Bit };
 
@@ -42,17 +40,23 @@
         public FormMain() {
             InitializeComponent();
 
+            canvas.OnZoom += (s, e) => UpdateStatusBar();
+            canvas.MouseMove += (s, e) => UpdateStatusBar();
+            canvas.Selector.OnEndDrag += (s, e) => UpdateStatusBar();
+
             canvas.OnCircuitChanged += (s, e) => UnsavedChanges = true;
             canvas.Circuit = circuit;
 
-            // TEMP: Replace timer with something better.
-            Timer timer = new Timer();
-            timer.Tick += (s, e) => {
-                if (circuit.Step(1))
-                    canvas.Refresh();
-            };
-            timer.Interval = 10;
-            timer.Start();
+            simulator.Circuit = circuit;
+            simulator.OnUpsChanged += (s, e) => Invoke((MethodInvoker) delegate { UpdateStatusBar(); });
+            simulator.OnStateChange += (s, e) => Invoke((MethodInvoker) delegate { canvas.Refresh(); });
+        }
+
+        private void UpdateStatusBar() {
+            tsslPositions.Text = $"{canvas.MouseWorldX:00.00}, {canvas.MouseWorldY:00.00} [{canvas.PanPositionX:00.00}, {canvas.PanPositionY:00.00}]";
+            tsslZoom.Text = $"{canvas.Zoom * 100.0:0.#}%";
+            tsslSeleciton.Text = $"{circuit.Components.Count} components, {canvas.Selector.SelectedItems.Count} selected";
+            tsslSimulationState.Text = $"{(simulator.IsRunning ? simulator.ActualUps : 0)} UPS @ {simulator.Speed}x {(simulator.IsRunning ? string.Empty : "(Paused)")}";
         }
 
         private void UpdateTitle() {
@@ -81,6 +85,8 @@
 
             lvComponentLibrary.View = View.LargeIcon;
             lvComponentLibrary.LargeImageList = componentThumbnailList;
+
+            simulator.Start();
         }
 
         // TEMP: move to more suitable location.
@@ -152,6 +158,20 @@
             UnsavedChanges = true;
         }
 
+        private Image GetCircuitImage() {
+            Image image = new Bitmap(canvas.Width, canvas.Height);
+
+            using (Graphics g = Graphics.FromImage(image)) {
+                g.SmoothingMode = SmoothingMode.HighQuality;
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                canvas.ApplyTransforms(g);
+                circuit.Draw(g);
+            }
+
+            return image;
+        }
 
         #region Menu Strip
 
@@ -173,16 +193,58 @@
             SaveAs();
         }
 
+        private void exportAsImageTsmi_Click(object sender, EventArgs e) {
+            using (SaveFileDialog dialog = new SaveFileDialog()) {
+                dialog.Filter = "PNG File (*.png)|*.png";
+                dialog.CheckPathExists = true;
+
+                if (dialog.ShowDialog(this) == DialogResult.OK) {
+
+                    using (Image image = GetCircuitImage())
+                        image.Save(dialog.FileName, ImageFormat.Png);
+                }
+            }
+        }
+
         private void exitTsmi_Click(object sender, EventArgs e) {
             Application.Exit();
         }
 
         #endregion
 
-        #region Simulation Menu
+        #region Circuit Menu
 
         private void createICToolStripMenuItem_Click(object sender, EventArgs e) {
             CreateIC(canvas.Selector.SelectedItems.ToList(), circuit);
+        }
+
+        #endregion
+
+        #region Simulation Menu
+
+        private void toggleSimulationTsmi_Click(object sender, EventArgs e) {
+            simulator.Toggle();
+
+            stepSimulationTsmi.Enabled  = !simulator.IsRunning;
+            speedTsmi.Enabled = simulator.IsRunning;
+
+            toggleSimulationTsmi.Text = simulator.IsRunning ? "&Pause" : "&Play";
+        }
+
+        private void stepSimulationTsmi_Click(object sender, EventArgs e) {
+            simulator.SingleStep();
+        }
+
+        private void speedTsmi_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e) {
+            float speed = Convert.ToSingle(e.ClickedItem.Tag);
+            simulator.Speed = speed;
+
+            ToolStripDropDownItem tsi = (ToolStripDropDownItem) sender;
+            foreach (ToolStripMenuItem item in tsi.DropDownItems.Cast<ToolStripMenuItem>())
+                item.Checked = false;
+
+
+            (e.ClickedItem as ToolStripMenuItem).Checked = true;
         }
 
         #endregion
@@ -194,6 +256,7 @@
                 canvas.Selector.Deselect(component);
                 circuit.RemoveComponent(component);
             }
+            UpdateStatusBar();
             canvas.Refresh();
         }
 
@@ -221,6 +284,14 @@
         }
 
         #endregion
+
+        private void optionsTsmi_Click(object sender, EventArgs e) {
+            using (FormOptions options = new FormOptions()) {
+                if (options.ShowDialog(this) == DialogResult.OK) {
+
+                }
+            }
+        }
 
         #region Help Menu
 
@@ -260,7 +331,7 @@
                 pendingComponent = (DigitalComponent) Activator.CreateInstance((Type) item.Tag, $"c_{((Type) item.Tag).Name.ToLower()}_{time.Substring(time.Length - 4, 4)}");
 
                 circuit.AddComponent(pendingComponent);
-
+                UpdateStatusBar();
                 canvas.Refresh();
             }
 
@@ -282,6 +353,7 @@
                 return;
 
             circuit.RemoveComponent(pendingComponent);
+            UpdateStatusBar();
             pendingComponent = null;
 
             canvas.Refresh();
@@ -359,6 +431,8 @@
             File.WriteAllText(filepath, json, new UTF8Encoding(false));
             UnsavedChanges = false;
         }
+
+
 
         #endregion
 

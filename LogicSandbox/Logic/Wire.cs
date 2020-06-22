@@ -32,9 +32,9 @@
         /// <summary>
         /// Simulates the wire by stepping in time.
         /// </summary>
-        /// <param name="stepAmount">The amount of time to step by, in milliseconds.</param>
+        /// <param name="deltaTime">Delta between steps, in seconds.</param>
         /// <returns>True if the state was changed, false otherwise.</returns>
-        public bool Step(float stepAmount) {
+        public bool Step(float deltaTime) {
             bool drivingValue = P1.Polarity == Polarity.Output ? P1.Value : P2.Value;
             bool otherValue = P1.Polarity == Polarity.Output ? P2.Value : P1.Value;
 

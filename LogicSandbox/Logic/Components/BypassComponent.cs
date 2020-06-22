@@ -15,7 +15,7 @@
             ProcessInterval = -1;
         }
 
-        protected override bool Process(float stepAmount) {
+        protected override bool Process(float deltaTime) {
             bool value = GetPins(Polarity.Input).Any(x => x.Value);
 
             return SetPinValues(Polarity.Output, value);

@@ -1,5 +1,5 @@
 ﻿namespace Maxstupo.LogicSandbox.Logic.Components {
- 
+
     using System.Collections.Generic;
     using System.Drawing;
     using System.Drawing.Drawing2D;
@@ -36,14 +36,14 @@
         public TextStyle LabelStyle { get; } = new TextStyle();
 
         /// <summary>
-        /// The amount of time that has passed since the last component update in milliseconds. See <see cref="Process"/>
+        /// The amount of time that has passed since the last component update in seconds. See <see cref="Process"/>
         /// </summary>
         public float Ticks { get; protected set; }
 
         /// <summary>
-        /// The interval in milliseconds between component updates. See <see cref="Process"/>
+        /// The interval in seconds between component updates. See <see cref="Process"/>
         /// </summary>
-        public float ProcessInterval { get; protected set; } = 5;
+        public float ProcessInterval { get; protected set; } = 0.125f;
 
         // A cache of pins used for quick look-up by their id.
         private readonly Dictionary<string, Pin> pins = new Dictionary<string, Pin>();
@@ -159,21 +159,21 @@
         /// <summary>
         /// Called when the simulation requires this component to update its state.
         /// </summary>
-        /// <param name="stepAmount">The amount of time to step by, in milliseconds.</param>
+        /// <param name="deltaTime">Delta between steps, in seconds.</param>
         /// <returns>True if the state was changed, false otherwise.</returns>
-        protected abstract bool Process(float stepAmount);
+        protected abstract bool Process(float deltaTime);
 
         /// <summary>
         /// Simulates the component by stepping in time.
         /// </summary>
-        /// <param name="stepAmount">The amount of time to step by, in milliseconds.</param>
+        /// <param name="deltaTime">Delta between steps, in seconds.</param>
         /// <returns>True if the state was changed, false otherwise.</returns>
-        public virtual bool Step(float stepAmount) {
-            Ticks += stepAmount;
+        public virtual bool Step(float deltaTime) {
+            Ticks += deltaTime;
 
             if (Ticks > ProcessInterval) {
                 Ticks = 0;
-                return Process(stepAmount);
+                return Process(deltaTime);
             }
 
             return false;

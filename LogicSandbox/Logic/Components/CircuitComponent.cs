@@ -81,7 +81,7 @@
 
         }
 
-        protected override bool Process(float stepAmount) {
+        protected override bool Process(float deltaTime) {
             if (internalCircuit == null)
                 return false;
 
@@ -90,7 +90,7 @@
                     internalInputPin.Value = icInputPin.Value;
             }
 
-            bool needsRefresh = internalCircuit.Step(stepAmount);
+            bool needsRefresh = internalCircuit.Step(deltaTime);
 
             foreach (Pin icOutputPin in GetPins(Polarity.Output)) {
                 if (pinMapping.TryGetValue(icOutputPin, out Pin internalOutputPin))

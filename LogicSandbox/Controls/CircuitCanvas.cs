@@ -1,10 +1,11 @@
 ﻿namespace Maxstupo.LogicSandbox.Controls {
-    
+
     using System;
     using System.Collections.Generic;
     using System.Drawing;
     using System.Drawing.Drawing2D;
     using System.Windows.Forms;
+    using Maxstupo.LogicSandbox.Forms;
     using Maxstupo.LogicSandbox.Logic;
     using Maxstupo.LogicSandbox.Logic.Components;
     using Maxstupo.LogicSandbox.Shapes;
@@ -41,12 +42,25 @@
             MouseDown += CircuitCanvas_MouseDown;
             MouseMove += CircuitCanvas_MouseMove;
             MouseUp += CircuitCanvas_MouseUp;
+            MouseDoubleClick += CircuitCanvas_MouseDoubleClick;
 
             Selector = new Selector<DigitalComponent>();
             Selector.OnDragging += (s, e) => Refresh();
             Selector.OnEndDrag += Selector_OnEndDrag;
 
             transformer.OnMoving += (s, e) => Refresh();
+        }
+
+        private void CircuitCanvas_MouseDoubleClick(object sender, MouseEventArgs e) {
+            if (Selector.SelectedItems.Count != 1)
+                return;
+            RenameComponent(Selector.SelectedItems[0]);
+        }
+
+        public void RenameComponent(DigitalComponent component) {
+            using (FormRenameComponent dialog = new FormRenameComponent(component))
+                dialog.ShowDialog(this);
+            Refresh();
         }
 
         private void CircuitCanvas_Paint(object sender, PaintEventArgs e) {

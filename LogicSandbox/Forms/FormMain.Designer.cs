@@ -45,8 +45,20 @@
             this.viewTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.centerTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.circuitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.simulationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createICToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.simulationToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toggleSimulationTsmi = new System.Windows.Forms.ToolStripMenuItem();
+            this.speedTsmi = new System.Windows.Forms.ToolStripMenuItem();
+            this.x025ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.x05ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.x075ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.x1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.x125ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.x15ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.x175ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.x2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.stepSimulationTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.helpTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.wikiTsmi = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,11 +68,17 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.canvas = new Maxstupo.LogicSandbox.Controls.CircuitCanvas();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.tsslPositions = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsslSimulationState = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsslSpring = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsslSeleciton = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsslZoom = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.statusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip
@@ -70,6 +88,7 @@
             this.editTsmi,
             this.viewTsmi,
             this.circuitToolStripMenuItem,
+            this.simulationToolStripMenuItem1,
             this.optionsTsmi,
             this.helpTsmi});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
@@ -156,6 +175,7 @@
             this.exportAsImageTsmi.Name = "exportAsImageTsmi";
             this.exportAsImageTsmi.Size = new System.Drawing.Size(166, 22);
             this.exportAsImageTsmi.Text = "Export as Image...";
+            this.exportAsImageTsmi.Click += new System.EventHandler(this.exportAsImageTsmi_Click);
             // 
             // toolStripSeparator1
             // 
@@ -186,7 +206,7 @@
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
             this.deleteToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
             this.deleteToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
-            this.deleteToolStripMenuItem.Text = "&Delete";
+            this.deleteToolStripMenuItem.Text = "&Delete Selection";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
@@ -237,18 +257,10 @@
             // circuitToolStripMenuItem
             // 
             this.circuitToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.simulationToolStripMenuItem,
             this.createICToolStripMenuItem});
             this.circuitToolStripMenuItem.Name = "circuitToolStripMenuItem";
             this.circuitToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
             this.circuitToolStripMenuItem.Text = "Circuit";
-            // 
-            // simulationToolStripMenuItem
-            // 
-            this.simulationToolStripMenuItem.Enabled = false;
-            this.simulationToolStripMenuItem.Name = "simulationToolStripMenuItem";
-            this.simulationToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
-            this.simulationToolStripMenuItem.Text = "Simulation";
             // 
             // createICToolStripMenuItem
             // 
@@ -257,12 +269,120 @@
             this.createICToolStripMenuItem.Text = "Create IC...";
             this.createICToolStripMenuItem.Click += new System.EventHandler(this.createICToolStripMenuItem_Click);
             // 
+            // simulationToolStripMenuItem1
+            // 
+            this.simulationToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toggleSimulationTsmi,
+            this.speedTsmi,
+            this.toolStripSeparator3,
+            this.stepSimulationTsmi});
+            this.simulationToolStripMenuItem1.Name = "simulationToolStripMenuItem1";
+            this.simulationToolStripMenuItem1.Size = new System.Drawing.Size(76, 20);
+            this.simulationToolStripMenuItem1.Text = "&Simulation";
+            // 
+            // toggleSimulationTsmi
+            // 
+            this.toggleSimulationTsmi.Name = "toggleSimulationTsmi";
+            this.toggleSimulationTsmi.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Space)));
+            this.toggleSimulationTsmi.Size = new System.Drawing.Size(180, 22);
+            this.toggleSimulationTsmi.Text = "&Pause";
+            this.toggleSimulationTsmi.Click += new System.EventHandler(this.toggleSimulationTsmi_Click);
+            // 
+            // speedTsmi
+            // 
+            this.speedTsmi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.x025ToolStripMenuItem,
+            this.x05ToolStripMenuItem,
+            this.x075ToolStripMenuItem,
+            this.x1ToolStripMenuItem,
+            this.x125ToolStripMenuItem,
+            this.x15ToolStripMenuItem,
+            this.x175ToolStripMenuItem,
+            this.x2ToolStripMenuItem});
+            this.speedTsmi.Name = "speedTsmi";
+            this.speedTsmi.Size = new System.Drawing.Size(180, 22);
+            this.speedTsmi.Text = "Speed";
+            this.speedTsmi.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.speedTsmi_DropDownItemClicked);
+            // 
+            // x025ToolStripMenuItem
+            // 
+            this.x025ToolStripMenuItem.Name = "x025ToolStripMenuItem";
+            this.x025ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.x025ToolStripMenuItem.Tag = "0.25";
+            this.x025ToolStripMenuItem.Text = "0.25";
+            // 
+            // x05ToolStripMenuItem
+            // 
+            this.x05ToolStripMenuItem.Name = "x05ToolStripMenuItem";
+            this.x05ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.x05ToolStripMenuItem.Tag = "0.5";
+            this.x05ToolStripMenuItem.Text = "0.5";
+            // 
+            // x075ToolStripMenuItem
+            // 
+            this.x075ToolStripMenuItem.Name = "x075ToolStripMenuItem";
+            this.x075ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.x075ToolStripMenuItem.Tag = "0.75";
+            this.x075ToolStripMenuItem.Text = "0.75";
+            // 
+            // x1ToolStripMenuItem
+            // 
+            this.x1ToolStripMenuItem.Checked = true;
+            this.x1ToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.x1ToolStripMenuItem.Name = "x1ToolStripMenuItem";
+            this.x1ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.x1ToolStripMenuItem.Tag = "1";
+            this.x1ToolStripMenuItem.Text = "Normal";
+            // 
+            // x125ToolStripMenuItem
+            // 
+            this.x125ToolStripMenuItem.Name = "x125ToolStripMenuItem";
+            this.x125ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.x125ToolStripMenuItem.Tag = "1.25";
+            this.x125ToolStripMenuItem.Text = "1.25";
+            // 
+            // x15ToolStripMenuItem
+            // 
+            this.x15ToolStripMenuItem.Name = "x15ToolStripMenuItem";
+            this.x15ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.x15ToolStripMenuItem.Tag = "1.5";
+            this.x15ToolStripMenuItem.Text = "1.5";
+            // 
+            // x175ToolStripMenuItem
+            // 
+            this.x175ToolStripMenuItem.Name = "x175ToolStripMenuItem";
+            this.x175ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.x175ToolStripMenuItem.Tag = "1.75";
+            this.x175ToolStripMenuItem.Text = "1.75";
+            // 
+            // x2ToolStripMenuItem
+            // 
+            this.x2ToolStripMenuItem.Name = "x2ToolStripMenuItem";
+            this.x2ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.x2ToolStripMenuItem.Tag = "2.0";
+            this.x2ToolStripMenuItem.Text = "2";
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
+            // 
+            // stepSimulationTsmi
+            // 
+            this.stepSimulationTsmi.Enabled = false;
+            this.stepSimulationTsmi.Name = "stepSimulationTsmi";
+            this.stepSimulationTsmi.ShortcutKeys = System.Windows.Forms.Keys.F6;
+            this.stepSimulationTsmi.Size = new System.Drawing.Size(180, 22);
+            this.stepSimulationTsmi.Text = "&Step";
+            this.stepSimulationTsmi.Click += new System.EventHandler(this.stepSimulationTsmi_Click);
+            // 
             // optionsTsmi
             // 
             this.optionsTsmi.Name = "optionsTsmi";
             this.optionsTsmi.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
             this.optionsTsmi.Size = new System.Drawing.Size(61, 20);
             this.optionsTsmi.Text = "&Options";
+            this.optionsTsmi.Click += new System.EventHandler(this.optionsTsmi_Click);
             // 
             // helpTsmi
             // 
@@ -299,7 +419,7 @@
             this.lvComponentLibrary.HideSelection = false;
             this.lvComponentLibrary.Location = new System.Drawing.Point(0, 0);
             this.lvComponentLibrary.Name = "lvComponentLibrary";
-            this.lvComponentLibrary.Size = new System.Drawing.Size(139, 426);
+            this.lvComponentLibrary.Size = new System.Drawing.Size(139, 404);
             this.lvComponentLibrary.TabIndex = 2;
             this.lvComponentLibrary.UseCompatibleStateImageBehavior = false;
             this.lvComponentLibrary.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.LvComponentLibrary_ItemDrag);
@@ -317,7 +437,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.canvas);
-            this.splitContainer1.Size = new System.Drawing.Size(800, 426);
+            this.splitContainer1.Size = new System.Drawing.Size(800, 404);
             this.splitContainer1.SplitterDistance = 139;
             this.splitContainer1.TabIndex = 3;
             // 
@@ -333,11 +453,11 @@
             this.canvas.Location = new System.Drawing.Point(0, 0);
             this.canvas.Name = "canvas";
             this.canvas.PanButton = System.Windows.Forms.MouseButtons.Middle;
-            this.canvas.PanPositionX = 18840.5F;
-            this.canvas.PanPositionY = 11289F;
+            this.canvas.PanPositionX = 29352.5F;
+            this.canvas.PanPositionY = 17753F;
             this.canvas.ScrollWheelMultiplier = 0.03F;
             this.canvas.ScrollWheelZoom = true;
-            this.canvas.Size = new System.Drawing.Size(657, 426);
+            this.canvas.Size = new System.Drawing.Size(657, 404);
             this.canvas.TabIndex = 0;
             this.canvas.Zoom = 1F;
             this.canvas.ZoomMaximum = 5F;
@@ -350,11 +470,48 @@
             // 
             // statusStrip
             // 
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsslPositions,
+            this.tsslSimulationState,
+            this.tsslSpring,
+            this.tsslSeleciton,
+            this.tsslZoom});
             this.statusStrip.Location = new System.Drawing.Point(0, 428);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(800, 22);
             this.statusStrip.TabIndex = 4;
             this.statusStrip.Text = "statusStrip1";
+            // 
+            // tsslPositions
+            // 
+            this.tsslPositions.Name = "tsslPositions";
+            this.tsslPositions.Size = new System.Drawing.Size(120, 17);
+            this.tsslPositions.Text = "0.12, 0.23 [0.54, 0.123]";
+            // 
+            // tsslSimulationState
+            // 
+            this.tsslSimulationState.Name = "tsslSimulationState";
+            this.tsslSimulationState.Size = new System.Drawing.Size(71, 17);
+            this.tsslSimulationState.Text = "10 UPS @ 1x";
+            // 
+            // tsslSpring
+            // 
+            this.tsslSpring.Name = "tsslSpring";
+            this.tsslSpring.Size = new System.Drawing.Size(412, 17);
+            this.tsslSpring.Spring = true;
+            this.tsslSpring.Text = "   ";
+            // 
+            // tsslSeleciton
+            // 
+            this.tsslSeleciton.Name = "tsslSeleciton";
+            this.tsslSeleciton.Size = new System.Drawing.Size(147, 17);
+            this.tsslSeleciton.Text = "12 components, 5 selected";
+            // 
+            // tsslZoom
+            // 
+            this.tsslZoom.Name = "tsslZoom";
+            this.tsslZoom.Size = new System.Drawing.Size(35, 17);
+            this.tsslZoom.Text = "125%";
             // 
             // FormMain
             // 
@@ -375,6 +532,8 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -411,9 +570,26 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem circuitToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem simulationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createICToolStripMenuItem;
         private System.Windows.Forms.StatusStrip statusStrip;
+        private System.Windows.Forms.ToolStripMenuItem simulationToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem toggleSimulationTsmi;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem stepSimulationTsmi;
+        private System.Windows.Forms.ToolStripStatusLabel tsslPositions;
+        private System.Windows.Forms.ToolStripStatusLabel tsslSimulationState;
+        private System.Windows.Forms.ToolStripStatusLabel tsslSpring;
+        private System.Windows.Forms.ToolStripStatusLabel tsslSeleciton;
+        private System.Windows.Forms.ToolStripStatusLabel tsslZoom;
+        private System.Windows.Forms.ToolStripMenuItem speedTsmi;
+        private System.Windows.Forms.ToolStripMenuItem x025ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem x05ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem x075ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem x1ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem x125ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem x15ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem x175ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem x2ToolStripMenuItem;
     }
 }
 
