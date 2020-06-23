@@ -13,10 +13,23 @@
     using Maxstupo.LogicSandbox.Logic;
     using Maxstupo.LogicSandbox.Logic.Components;
     using Maxstupo.LogicSandbox.Properties;
-    using Maxstupo.LogicSandbox.Shapes;
-    using Maxstupo.LogicSandbox.Utility.Interaction;
 
     public partial class FormMain : Form {
+
+        private Version Version => System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+        private string DisplayVersion {
+            get {
+                Version version = Version;
+
+                string displayVersion = $"v{version.Major}.{version.Minor}.{version.Build}";
+
+                if (version.Revision != 0)
+                    displayVersion += $".{version.Revision}";
+
+                return displayVersion;
+            }
+        }
+
 
         private Circuit circuit = new Circuit();
         private readonly CircuitSimulator simulator = new CircuitSimulator();
@@ -50,6 +63,8 @@
             simulator.Circuit = circuit;
             simulator.OnUpsChanged += (s, e) => Invoke((MethodInvoker) delegate { UpdateStatusBar(); });
             simulator.OnStateChange += (s, e) => Invoke((MethodInvoker) delegate { canvas.Refresh(); });
+
+            UpdateTitle();
         }
 
         private void UpdateStatusBar() {
@@ -60,10 +75,12 @@
         }
 
         private void UpdateTitle() {
+            string version = DisplayVersion;
+
             if (openFilepath == null) {
-                Text = "Logic Sandbox";
+                Text = $"Logic Sandbox {version}";
             } else {
-                Text = $"Logic Sandbox - {openFilepath}{(UnsavedChanges ? "*" : string.Empty)}";
+                Text = $"Logic Sandbox {version} - {openFilepath}{(UnsavedChanges ? "*" : string.Empty)}";
             }
         }
 
@@ -225,7 +242,7 @@
         private void toggleSimulationTsmi_Click(object sender, EventArgs e) {
             simulator.Toggle();
 
-            stepSimulationTsmi.Enabled  = !simulator.IsRunning;
+            stepSimulationTsmi.Enabled = !simulator.IsRunning;
             speedTsmi.Enabled = simulator.IsRunning;
 
             toggleSimulationTsmi.Text = simulator.IsRunning ? "&Pause" : "&Play";
