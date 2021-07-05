@@ -205,7 +205,7 @@
         /// Apply the scale and translation transforms to the specified <see cref="Graphics"/> object.
         /// </summary>
         /// <param name="g">The graphics object to apply the transforms.</param>
-        public virtual void ApplyTransforms(Graphics g) {
+        public virtual void ApplyTransformsTo(Graphics g) {
             g.ScaleTransform(Zoom, Zoom);
             g.TranslateTransform(PanPositionX, PanPositionY);
         }

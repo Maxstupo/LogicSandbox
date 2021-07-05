@@ -183,7 +183,7 @@
                 g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-                canvas.ApplyTransforms(g);
+                canvas.ApplyTransformsTo(g);
                 circuit.Draw(g);
             }
 
