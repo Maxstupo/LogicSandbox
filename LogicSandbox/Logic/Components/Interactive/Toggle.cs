@@ -6,7 +6,7 @@
 
         }
 
-        public Toggle(string id, float x, float y) : base(id, "Toggle", x, y, 34, 34) {
+        public Toggle(string id, float x, float y) : base(id, "Toggle", x, y) {
 
         }
 

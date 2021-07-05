@@ -8,7 +8,7 @@
 
         }
 
-        public Power(string id, float x, float y) : base(id, "PWR", x, y, 34, 34) {
+        public Power(string id, float x, float y) : base(id, "PWR", x, y) {
             BackgroundColor = Color.FromArgb(255, 204, 204);
 
             Pin pin = AddPin("out0", Polarity.Output);

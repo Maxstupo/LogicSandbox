@@ -8,7 +8,7 @@
 
         }
 
-        public NotGate(string id, float x, float y) : base(id, "NOT", x, y, 34, 34) {
+        public NotGate(string id, float x, float y) : base(id, "NOT", x, y) {
 
             AddPin("in0", Polarity.Input);
             AddPin("out0", Polarity.Output);

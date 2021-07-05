@@ -6,7 +6,7 @@
 
         }
 
-        public PushOn(string id, float x, float y) : base(id, "Push On", x, y, 34, 34) { }
+        public PushOn(string id, float x, float y) : base(id, "Push On", x, y) { }
 
         protected override void OnButtonPressed() {
             ButtonState = true;

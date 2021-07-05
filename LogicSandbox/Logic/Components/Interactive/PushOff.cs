@@ -6,7 +6,7 @@
 
         }
 
-        public PushOff(string id, float x, float y) : base(id, "Push Off", x, y, 34, 34) {
+        public PushOff(string id, float x, float y) : base(id, "Push Off", x, y) {
             ButtonState = true;
         }
 

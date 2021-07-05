@@ -9,7 +9,7 @@
 
         }
 
-        public OrGate(string id, float x, float y) : base(id, "OR", x, y, 34, 34) {
+        public OrGate(string id, float x, float y) : base(id, "OR", x, y) {
 
             AddPin("in0", Polarity.Input);
             AddPin("in1", Polarity.Input);

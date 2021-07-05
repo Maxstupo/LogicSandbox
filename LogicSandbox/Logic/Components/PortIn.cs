@@ -8,7 +8,7 @@
 
         }
 
-        public PortIn(string id, float x, float y) : base(id, "IN1", x, y, 34, 34) {
+        public PortIn(string id, float x, float y) : base(id, "IN1", x, y) {
 
             AddPin("in0", Polarity.Input);
             AddPin("out0", Polarity.Output);

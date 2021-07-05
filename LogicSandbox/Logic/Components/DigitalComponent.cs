@@ -55,7 +55,7 @@
         public DigitalComponent(string id) : this(id, null, 0, 0, 0, 0) {
         }
 
-        public DigitalComponent(string id, string label, float x, float y, float width, float height) : base(x, y, width, height) {
+        public DigitalComponent(string id, string label, float x, float y, float width=50, float height=50) : base(x, y, width, height) {
             Id = id;
             Label = label;
 

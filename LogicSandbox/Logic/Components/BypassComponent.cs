@@ -11,7 +11,7 @@
 
         }
 
-        public BypassComponent(string id, string label, float x, float y, float width, float height) : base(id, label, x, y, width, height) {
+        public BypassComponent(string id, string label, float x, float y, float width=50, float height=50) : base(id, label, x, y, width, height) {
             ProcessInterval = -1;
         }
 
