@@ -15,6 +15,7 @@
     /// Represents a collection of components that are connected via wires.
     /// </summary>
     public class Circuit {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         /// <summary>The components of the circuit.</summary>
         public List<DigitalComponent> Components { get; } = new List<DigitalComponent>();
@@ -31,19 +32,65 @@
 
         }
 
+        public static Circuit CreateIC(List<DigitalComponent> components, Circuit baseCircuit) {
+            if (components.Count == 0)
+                return null;
+
+            if (!components.Any(x => x is PortOut))
+                return null;
+
+            Circuit internalCircuit = new Circuit();
+
+            foreach (DigitalComponent component in components) {
+                internalCircuit.AddComponent(component);
+
+                // Add all wires that are contained to the components list.
+                foreach (Pin pin in component.Pins) {
+                    foreach (Wire wire in baseCircuit.GetWires(pin)) {
+
+                        Pin otherPin = pin.FullId != wire.P1.FullId ? wire.P1 : wire.P2;
+
+                        // Check if wire connects within the components list.
+                        bool contained = false;
+                        foreach (DigitalComponent component2 in components) {
+                            foreach (Pin pin2 in component2.Pins) {
+                                if (pin2.FullId == otherPin.FullId) {
+                                    contained = true;
+                                    break;
+                                }
+                            }
+                            if (contained)
+                                break;
+                        }
+
+                        if (contained)
+                            internalCircuit.AddWire(wire.P1, wire.P2);
+
+                    }
+                }
+
+                baseCircuit.RemoveComponent(component);
+           
+            }
+
+            Logger.Info("Created IC with {componentCount} components and {wireCount} wires", internalCircuit.Components.Count, internalCircuit.WireCount);
+
+            return internalCircuit;
+        }
+
         /// <summary>
         /// Adds a component to the circuit. If the circuit already contains a component with the ID this method wont do anything.
         /// </summary>
         public void AddComponent(DigitalComponent component) {
             if (lookup.ContainsKey(component.Id)) {
-                Console.WriteLine($"Component with ID already in circuit: {component.Id}");
+                Logger.Warn("Component with ID already in circuit: {id}", component.Id);
                 return;
             }
 
             lookup.Add(component.Id, component);
             Components.Add(component);
 
-            Console.WriteLine($"Added {component.GetType().Name} component with ID \"{component.Id}\"");
+            Logger.Info("Added {name} component with ID {id}", component.GetType().Name, component.Id);
         }
 
         /// <summary>
@@ -63,14 +110,14 @@
                 return;
 
             if (lookup.TryGetValue(id, out DigitalComponent component)) {
-                Console.WriteLine($"Removing component with ID \"{id}\"");
+                Logger.Info("Removing component with ID {id}", id);
 
                 foreach (Pin pin in component.Pins)
                     RemoveConnectedWires(pin);
 
                 Components.RemoveAll(x => x.Id == id);
             } else {
-                Console.WriteLine($"Component with ID \"{id}\" doesn't exist in circuit.");
+                Logger.Warn("Component with ID {id} doesn't exist in circuit.", id);
             }
         }
 
@@ -339,7 +386,7 @@
 
                 Type componentType = Type.GetType(type, false, true);
                 if (componentType == null) {
-                    Console.WriteLine("Unknown component type: " + type);
+                    Logger.Warn("Unknown component type: {type}", type);
                     continue;
                 }
 

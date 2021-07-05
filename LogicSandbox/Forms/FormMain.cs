@@ -15,6 +15,7 @@
     using Maxstupo.LogicSandbox.Properties;
 
     public partial class FormMain : Form {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         private Version Version => System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
         private string DisplayVersion {
@@ -52,7 +53,6 @@
 
         public FormMain() {
             InitializeComponent();
-
             canvas.OnZoom += (s, e) => UpdateStatusBar();
             canvas.MouseMove += (s, e) => UpdateStatusBar();
             canvas.Selector.OnEndDrag += (s, e) => UpdateStatusBar();
@@ -90,7 +90,6 @@
             canvas.Center();
 
             // TEMP: Allow auto discovery of components.
-            // TEMP: move to more suitable location.
             AddComponentToLibrary(new Power("", 0, 0));
             AddComponentToLibrary(new Toggle("", 0, 0));
             AddComponentToLibrary(new PushOn("", 0, 0));
@@ -98,6 +97,9 @@
             AddComponentToLibrary(new NotGate("", 0, 0));
             AddComponentToLibrary(new OrGate("", 0, 0));
             AddComponentToLibrary(new PortIn("", 0, 0));
+
+
+
             componentThumbnailList.ImageSize = AddComponentToLibrary(new PortOut("", 0, 0));
 
             lvComponentLibrary.View = View.LargeIcon;
@@ -106,7 +108,6 @@
             simulator.Start();
         }
 
-        // TEMP: move to more suitable location.
         private Size AddComponentToLibrary(DigitalComponent dc) {
             Image thumbnail = DigitalComponent.GenerateThumbnail(dc);
 
@@ -118,62 +119,6 @@
             return thumbnail.Size;
         }
 
-
-        /// <summary>
-        /// Creates an IC from the provided components, the circuit provided must be the source of the components in the list.
-        /// </summary>
-        public void CreateIC(List<DigitalComponent> components, Circuit baseCircuit) {
-            if (components.Count == 0)
-                return;
-
-            if (!components.Any(x => x is PortOut))
-                return;
-
-            Circuit internalCircuit = new Circuit();
-
-            foreach (DigitalComponent component in components) {
-                internalCircuit.AddComponent(component);
-
-                // Add all wires that are contained to the components list.
-                foreach (Pin pin in component.Pins) {
-                    foreach (Wire wire in baseCircuit.GetWires(pin)) {
-
-                        Pin otherPin = pin.FullId != wire.P1.FullId ? wire.P1 : wire.P2;
-
-                        // Check if wire connects within the components list.
-                        bool contained = false;
-                        foreach (DigitalComponent component2 in components) {
-                            foreach (Pin pin2 in component2.Pins) {
-                                if (pin2.FullId == otherPin.FullId) {
-                                    contained = true;
-                                    break;
-                                }
-                            }
-                            if (contained)
-                                break;
-                        }
-
-                        if (contained)
-                            internalCircuit.AddWire(wire.P1, wire.P2);
-
-                    }
-                }
-
-                baseCircuit.RemoveComponent(component);
-                canvas.Selector.Deselect(component);
-            }
-
-            Console.WriteLine($"Created IC with {internalCircuit.Components.Count} components and {internalCircuit.WireCount} wires");
-
-            string time = DateTime.Now.Ticks.ToString();
-            CircuitComponent circuitComponent = new CircuitComponent($"comp_ic_{time.Substring(time.Length - 4, 4)}", 0, 0) {
-                InternalCircuit = internalCircuit
-            };
-
-            baseCircuit.AddComponent(circuitComponent);
-            canvas.Refresh();
-            UnsavedChanges = true;
-        }
 
         private Image GetCircuitImage() {
             Image image = new Bitmap(canvas.Width, canvas.Height);
@@ -232,7 +177,8 @@
         #region Circuit Menu
 
         private void createICToolStripMenuItem_Click(object sender, EventArgs e) {
-            CreateIC(canvas.Selector.SelectedItems.ToList(), circuit);
+            if (canvas.CreateIC(canvas.Selector.SelectedItems.ToList()) != null)
+                UnsavedChanges = true;
         }
 
         #endregion
@@ -453,6 +399,9 @@
 
         #endregion
 
+        private void FormMain_FormClosing(object sender, FormClosingEventArgs e) {
+            simulator.Stop();
+        }
     }
 
 }

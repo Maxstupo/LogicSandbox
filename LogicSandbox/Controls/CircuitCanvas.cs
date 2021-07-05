@@ -51,15 +51,56 @@
             transformer.OnMoving += (s, e) => Refresh();
         }
 
+        protected override void Dispose(bool disposing) {
+            base.Dispose(disposing);
+            if (disposing) {
+                foreach (FormCircuit cir in formCircuits)
+                    cir.Dispose();
+                formCircuits.Clear();
+            }
+                
+        }
+
+        /// <summary>
+        /// Creates an IC from the provided components, the circuit provided must be the source of the components in the list.
+        /// </summary>
+        public CircuitComponent CreateIC(List<DigitalComponent> components) {
+            Circuit internalCircuit = Circuit.CreateIC(components, Circuit);
+            if (internalCircuit == null)
+                return null;
+
+            foreach (DigitalComponent component in components)
+                Selector.Deselect(component);
+
+            string time = DateTime.Now.Ticks.ToString();
+            CircuitComponent circuitComponent = new CircuitComponent($"comp_ic_{time.Substring(time.Length - 4, 4)}", 0, 0) {
+                InternalCircuit = internalCircuit
+            };
+
+            Circuit.AddComponent(circuitComponent);
+            Refresh();
+
+            return circuitComponent;
+        }
+
         private void CircuitCanvas_MouseDoubleClick(object sender, MouseEventArgs e) {
             if (Selector.SelectedItems.Count != 1)
                 return;
+
             RenameComponent(Selector.SelectedItems[0]);
         }
 
         public void RenameComponent(DigitalComponent component) {
-            using (FormRenameComponent dialog = new FormRenameComponent(component))
-                dialog.ShowDialog(this);
+
+            if (ModifierKeys.HasFlag(Keys.Control) && component is CircuitComponent cc) {
+
+
+
+            } else {
+
+                using (FormRenameComponent dialog = new FormRenameComponent(component))
+                    dialog.ShowDialog(this);
+            }
             Refresh();
         }
 

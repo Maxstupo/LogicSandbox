@@ -55,6 +55,12 @@
     <Compile Include="Controls\CircuitCanvas.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Forms\FormCircuit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormCircuit.Designer.cs">
+      <DependentUpon>FormCircuit.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -82,11 +88,11 @@
     <Compile Include="Logic\Components\PortIn.cs" />
     <Compile Include="Logic\Components\PortOut.cs" />
     <Compile Include="Logic\Components\Power.cs" />
-    <Compile Include="Logic\Components\OrGate.cs" />
-    <Compile Include="Logic\Components\NotGate.cs" />
-    <Compile Include="Logic\Components\PushOff.cs" />
-    <Compile Include="Logic\Components\PushOn.cs" />
-    <Compile Include="Logic\Components\Toggle.cs" />
+    <Compile Include="Logic\Components\Gates\OrGate.cs" />
+    <Compile Include="Logic\Components\Gates\NotGate.cs" />
+    <Compile Include="Logic\Components\Interactive\PushOff.cs" />
+    <Compile Include="Logic\Components\Interactive\PushOn.cs" />
+    <Compile Include="Logic\Components\Interactive\Toggle.cs" />
     <Compile Include="Logic\Pin.cs" />
     <Compile Include="Logic\Polarity.cs" />
     <Compile Include="Logic\Wire.cs" />
@@ -102,6 +108,9 @@
     <Compile Include="Utility\Node.cs" />
     <Compile Include="Utility\Interaction\Selector.cs" />
     <Compile Include="Utility\TextStyle.cs" />
+    <EmbeddedResource Include="Forms\FormCircuit.resx">
+      <DependentUpon>FormCircuit.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
     </EmbeddedResource>
@@ -121,6 +130,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -137,6 +149,9 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="NLog">
+      <Version>4.7.10</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
