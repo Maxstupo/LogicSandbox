@@ -176,6 +176,11 @@
 
         #endregion
 
+        public bool GridVisible { get; set; } = true;
+        public int GridSize { get; set; } = 20;
+
+        public int GridLimit { get; set; } = 25000;
+
         /// <summary>
         /// The previous width of the <see cref="Canvas"/> as of the last resize event.
         /// </summary>
@@ -216,11 +221,23 @@
             Graphics g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
-            ApplyTransforms(g);
+            ApplyTransformsTo(g);
 
-            // TEMP: Canvas center point lines
-            g.DrawLine(Pens.Black, 0, -200, 0, 200);
-            g.DrawLine(Pens.Black, -200, 0, 200, 0);
+            if (GridVisible) {
+                int gridWidth = (int) (Width / GridSize * 1f / Zoom) + 2;
+                int gridHeight = (int) (Height / GridSize * 1f / Zoom) + 2;
+
+                if (gridWidth * gridHeight < GridLimit) {
+                    int minX = (int) -Math.Ceiling(PanPositionX / GridSize) - 1;
+                    int minY = (int) -Math.Ceiling(PanPositionY / GridSize) - 1;
+                    for (int x = minX; x <= minX + gridWidth; x++) {
+                        for (int y = minY; y <= minY + gridHeight; y++) {
+                            g.DrawEllipse(Pens.Gray, x * GridSize, y * GridSize, 1, 1);
+                        }
+                    }
+                }
+            }
+
         }
 
         private void Canvas_Resize(object sender, EventArgs e) {
