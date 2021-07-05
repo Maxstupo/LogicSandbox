@@ -86,7 +86,7 @@
 
 
         private void FormMain_Load(object sender, EventArgs e) {
-            canvas.Zoom = 2; // TEMP: Zoom Level.
+            canvas.Zoom = 1; // TEMP: Zoom Level.
             canvas.Center();
 
             // TEMP: Allow auto discovery of components.
